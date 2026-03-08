@@ -3,6 +3,7 @@ package de.c4vxl.ranksystem
 import de.c4vxl.ranksystem.plugin.command.RankCommand
 import de.c4vxl.ranksystem.plugin.handlers.DefaultRankHandler
 import de.c4vxl.ranksystem.plugin.handlers.DisplayHandler
+import de.c4vxl.ranksystem.plugin.handlers.PermissionHandler
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIPaperConfig
 import org.bukkit.configuration.file.FileConfiguration
@@ -40,6 +41,7 @@ class Main : JavaPlugin() {
         // Register handlers
         DefaultRankHandler()
         DisplayHandler()
+        PermissionHandler()
 
         // Register commands
         RankCommand
