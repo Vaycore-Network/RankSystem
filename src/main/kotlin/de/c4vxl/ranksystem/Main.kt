@@ -1,5 +1,6 @@
 package de.c4vxl.ranksystem
 
+import de.c4vxl.ranksystem.language.Language
 import de.c4vxl.ranksystem.plugin.command.RankCommand
 import de.c4vxl.ranksystem.plugin.handlers.DefaultRankHandler
 import de.c4vxl.ranksystem.plugin.handlers.DisplayHandler
@@ -37,6 +38,9 @@ class Main : JavaPlugin() {
         saveResource("config.yml", false)
         reloadConfig()
         Main.config = this.config
+
+        // Load langs
+        Language.load()
 
         // Register handlers
         DefaultRankHandler()

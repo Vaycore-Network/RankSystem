@@ -24,5 +24,8 @@ language:
   # Path to the languages database
   db: "./languages.yml"
 
+  # Path to directory to store translation files in to
+  translations-dir: "./translations/ranks/"
+
   # The default language
   default: "english"

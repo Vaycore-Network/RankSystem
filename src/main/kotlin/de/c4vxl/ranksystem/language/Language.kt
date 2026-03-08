@@ -2,6 +2,7 @@ package de.c4vxl.ranksystem.language
 
 import com.google.gson.Gson
 import de.c4vxl.ranksystem.Main
+import de.c4vxl.ranksystem.utils.ResourceUtils
 import io.leangen.geantyref.TypeToken
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -9,6 +10,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.io.File
+import java.nio.file.Path
 
 /**
  * Lookup table for translations based on keys
@@ -21,14 +23,14 @@ class Language(
 ) {
     companion object {
         /**
-         * Loads a language
-         * @param name The name of the language
+         * Loads a language from a file
+         * @param path The path to the language file
          */
-        fun get(name: String): Language? {
-            // Load translation file
-            val content = Language::class.java.getResourceAsStream("/lang/$name.json")
-                ?.bufferedReader()
-                ?.readText() ?: return null
+        fun fromFile(path: String): Language? {
+            val file = File(path)
+            if (!file.exists()) return null
+
+            val content = file.readText()
 
             // Load translation
             val translations: Map<String, String> = Gson().fromJson(
@@ -36,18 +38,36 @@ class Language(
                 object : TypeToken<Map<String, String>>() {}.type
             )
 
-            return Language(translations, name)
+            return Language(translations, file.nameWithoutExtension)
         }
 
         /**
-         * Returns a list of all available languages
+         * Loads a language
+         * @param name The name of the language
          */
-        val availableLanguages: List<String>
-            get() =
-                (Language::class.java
-                    .getResourceAsStream("langs")
-                    ?.bufferedReader()
-                    ?.readText() ?: "").split("\n")
+        fun get(name: String): Language? =
+            fromFile(
+                translationsDirectory.resolve("$name.json").toString()
+            )
+
+        private val translationsDirectory: Path
+            get() = Path.of(
+                (Main.config.getString("language.translations-dir")
+                    ?: "./translations/")
+            )
+
+        /**
+         * Loads languages from jar to disc
+         */
+        fun load() {
+            ResourceUtils.readResource("langs").split("\n")
+                .forEach { lang ->
+                    ResourceUtils.saveResource(
+                        "lang/$lang.json",
+                        translationsDirectory.resolve("$lang.json").toString()
+                    )
+                }
+        }
 
         /**
          * Returns the path to the language db
