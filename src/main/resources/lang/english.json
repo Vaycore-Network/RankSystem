@@ -41,5 +41,5 @@
   "command.ranks.position.get.msg": "${prefix} Position of rank <gray>$0</gray>: $1",
 
   "command.ranks.position.set.failure.invalid_rank": "${invalid-rank}",
-  "command.ranks.position.set.success": "${prefix} <green>Successfully updated position of</green> '$1'!"
+  "command.ranks.position.set.success": "${prefix} <green>Successfully updated position of</green> '$0'!"
 }
