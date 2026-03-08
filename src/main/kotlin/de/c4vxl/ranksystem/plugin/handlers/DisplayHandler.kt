@@ -5,6 +5,7 @@ import de.c4vxl.ranksystem.data.Database
 import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.update.*
 import de.c4vxl.ranksystem.ranks.RankManager
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -46,22 +47,30 @@ class DisplayHandler : Listener {
             .forEach { it.removeEntry(player.name) }
 
         // Display prefix
-        if (Main.config.getBoolean("config.use-prefix") && rank.prefix != "")
-            team.prefix(
-                MiniMessage.miniMessage().deserialize(
-                    (Main.config.getString("config.prefix-format") ?: "\$prefix <gray>|</gray>")
-                        .replace("\$prefix", rank.prefix)
+        if (Main.config.getBoolean("config.use-prefix")) {
+            if (rank.prefix == "")
+                team.prefix(Component.empty())
+            else
+                team.prefix(
+                    MiniMessage.miniMessage().deserialize(
+                        (Main.config.getString("config.prefix-format") ?: "\$prefix <gray>|</gray>")
+                            .replace("\$prefix", rank.prefix)
+                    )
                 )
-            )
+        }
 
         // Display suffix
-        if (Main.config.getBoolean("config.use-suffix") && rank.suffix != "")
-            team.suffix(
-                MiniMessage.miniMessage().deserialize(
-                    (Main.config.getString("config.suffix-format") ?: "<gray>|</gray> \$suffix")
-                        .replace("\$suffix", rank.suffix)
+        if (Main.config.getBoolean("config.use-suffix")) {
+            if (rank.suffix == "")
+                team.suffix(Component.empty())
+            else
+                team.suffix(
+                    MiniMessage.miniMessage().deserialize(
+                        (Main.config.getString("config.suffix-format") ?: "<gray>|</gray> \$suffix")
+                            .replace("\$suffix", rank.suffix)
+                    )
                 )
-            )
+        }
 
         team.addEntry(player.name)
     }
