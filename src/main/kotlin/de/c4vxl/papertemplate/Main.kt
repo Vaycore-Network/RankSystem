@@ -1,5 +1,6 @@
 package de.c4vxl.papertemplate
 
+import de.c4vxl.papertemplate.plugin.handlers.DefaultRankHandler
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIPaperConfig
 import org.bukkit.configuration.file.FileConfiguration
@@ -33,6 +34,9 @@ class Main : JavaPlugin() {
         saveResource("config.yml", false)
         reloadConfig()
         Main.config = this.config
+
+        // Register handlers
+        DefaultRankHandler()
 
         logger.info("[+] $name has been enabled!")
     }
