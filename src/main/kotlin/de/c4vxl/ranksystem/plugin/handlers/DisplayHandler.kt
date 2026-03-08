@@ -3,10 +3,7 @@ package de.c4vxl.ranksystem.plugin.handlers
 import de.c4vxl.ranksystem.Main
 import de.c4vxl.ranksystem.data.Database
 import de.c4vxl.ranksystem.data.Rank
-import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
-import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
-import de.c4vxl.ranksystem.event.update.RankPositionUpdateEvent
-import de.c4vxl.ranksystem.event.update.RankPrefixUpdateEvent
+import de.c4vxl.ranksystem.event.update.*
 import de.c4vxl.ranksystem.ranks.RankManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -49,7 +46,7 @@ class DisplayHandler : Listener {
             .forEach { it.removeEntry(player.name) }
 
         // Display prefix
-        if (Main.config.getBoolean("config.use-prefix") && rank.prefix.isNotBlank())
+        if (Main.config.getBoolean("config.use-prefix") && rank.prefix != "")
             team.prefix(
                 MiniMessage.miniMessage().deserialize(
                     (Main.config.getString("config.prefix-format") ?: "\$prefix <gray>|</gray>")
@@ -58,7 +55,7 @@ class DisplayHandler : Listener {
             )
 
         // Display suffix
-        if (Main.config.getBoolean("config.use-suffix") && rank.suffix.isNotBlank())
+        if (Main.config.getBoolean("config.use-suffix") && rank.suffix != "")
             team.suffix(
                 MiniMessage.miniMessage().deserialize(
                     (Main.config.getString("config.suffix-format") ?: "<gray>|</gray> \$suffix")
@@ -78,7 +75,7 @@ class DisplayHandler : Listener {
     }
 
     @EventHandler
-    fun onSuffixUpdate(event: RankPrefixUpdateEvent) {
+    fun onSuffixUpdate(event: RankSuffixUpdateEvent) {
         event.rank.players
             .filter { RankManager.isHighestRank(it, event.rank) }
             .mapNotNull { it.player }
