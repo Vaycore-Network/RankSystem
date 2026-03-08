@@ -15,10 +15,10 @@ config:
   use-suffix: true
 
   # The format used for displaying prefixes
-  prefix-format: "$prefix <gray>|</gray>"
+  prefix-format: "$prefix <gray>|</gray> "
 
   # The format used for displaying suffixes
-  suffix-format: "<gray>|</gray> $suffix"
+  suffix-format: " <gray>|</gray> $suffix"
 
 language:
   # Path to the languages database
