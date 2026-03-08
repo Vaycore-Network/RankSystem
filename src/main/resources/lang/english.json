@@ -41,5 +41,21 @@
   "command.ranks.position.get.msg": "${prefix} Position of rank <gray>$0</gray>: $1",
 
   "command.ranks.position.set.failure.invalid_rank": "${invalid-rank}",
-  "command.ranks.position.set.success": "${prefix} <green>Successfully updated position of</green> '$0'!"
+  "command.ranks.position.set.success": "${prefix} <green>Successfully updated position of</green> '$0'!",
+
+  "command.ranks.prefix.get.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.prefix.get.failure.blank": "${sorry} But this rank doesn't have a prefix!",
+  "command.ranks.prefix.get.msg": "${prefix} Prefix of '$0': $1",
+  "command.ranks.prefix.set.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.prefix.set.success": "${prefix} <green>Successfully updated prefix of</green> '$0'!",
+  "command.ranks.prefix.remove.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.prefix.remove.success": "${prefix} <green>Successfully removed prefix of</green> '$0'!",
+
+  "command.ranks.suffix.get.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.suffix.get.failure.blank": "${sorry} But this rank doesn't have a prefix!",
+  "command.ranks.suffix.get.msg": "${prefix} Suffix of '$0': $1",
+  "command.ranks.suffix.set.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.suffix.set.success": "${prefix} <green>Successfully updated suffix of</green> '$0'!",
+  "command.ranks.suffix.remove.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.suffix.remove.success": "${prefix} <green>Successfully removed suffix of</green> '$0'!"
 }

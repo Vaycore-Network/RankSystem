@@ -288,5 +288,135 @@ object RankCommand {
                 }
             }
         }
+
+        literalArgument("prefix") {
+            argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
+                Database.registeredRanks.keys.toTypedArray()
+            })) {
+                literalArgument("get") {
+                    anyExecutor { sender, args ->
+                        val rankName = args.get("rank").toString()
+                        val rank = Database.getRank(rankName)
+
+                        if (rank == null) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.prefix.get.failure.invalid_rank", rankName))
+                            return@anyExecutor
+                        }
+
+                        if (rank.prefix.isBlank()) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.prefix.get.failure.blank", rankName))
+                            return@anyExecutor
+                        }
+
+                        // Send
+                        sender.sendMessage(sender.language.getCmp("command.ranks.prefix.get.msg", rankName, rank.prefix))
+                    }
+                }
+
+                literalArgument("set") {
+                    greedyStringArgument("prefix") {
+                        anyExecutor { sender, args ->
+                            val rankName = args.get("rank").toString()
+                            val rank = Database.getRank(rankName)
+                            val prefix = args.get("prefix").toString()
+
+                            if (rank == null) {
+                                sender.sendMessage(sender.language.getCmp("command.ranks.prefix.set.failure.invalid_rank", rankName))
+                                return@anyExecutor
+                            }
+
+                            // Update
+                            rank.update { this.prefix = prefix }
+
+                            // Send confirmation
+                            sender.sendMessage(sender.language.getCmp("command.ranks.prefix.set.success", rankName, prefix))
+                        }
+                    }
+                }
+
+                literalArgument("remove") {
+                    anyExecutor { sender, args ->
+                        val rankName = args.get("rank").toString()
+                        val rank = Database.getRank(rankName)
+
+                        if (rank == null) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.prefix.remove.failure.invalid_rank", rankName))
+                            return@anyExecutor
+                        }
+
+                        // Update
+                        rank.update { this.prefix = "" }
+
+                        // Send confirmation
+                        sender.sendMessage(sender.language.getCmp("command.ranks.prefix.remove.success", rankName))
+                    }
+                }
+            }
+        }
+
+        literalArgument("suffix") {
+            argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
+                Database.registeredRanks.keys.toTypedArray()
+            })) {
+                literalArgument("get") {
+                    anyExecutor { sender, args ->
+                        val rankName = args.get("rank").toString()
+                        val rank = Database.getRank(rankName)
+
+                        if (rank == null) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.suffix.get.failure.invalid_rank", rankName))
+                            return@anyExecutor
+                        }
+
+                        if (rank.suffix.isBlank()) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.suffix.get.failure.blank", rankName))
+                            return@anyExecutor
+                        }
+
+                        // Send
+                        sender.sendMessage(sender.language.getCmp("command.ranks.suffix.get.msg", rankName, rank.suffix))
+                    }
+                }
+
+                literalArgument("set") {
+                    greedyStringArgument("suffix") {
+                        anyExecutor { sender, args ->
+                            val rankName = args.get("rank").toString()
+                            val rank = Database.getRank(rankName)
+                            val suffix = args.get("suffix").toString()
+
+                            if (rank == null) {
+                                sender.sendMessage(sender.language.getCmp("command.ranks.suffix.set.failure.invalid_rank", rankName))
+                                return@anyExecutor
+                            }
+
+                            // Update
+                            rank.update { this.suffix = suffix }
+
+                            // Send confirmation
+                            sender.sendMessage(sender.language.getCmp("command.ranks.suffix.set.success", rankName, suffix))
+                        }
+                    }
+                }
+
+                literalArgument("remove") {
+                    anyExecutor { sender, args ->
+                        val rankName = args.get("rank").toString()
+                        val rank = Database.getRank(rankName)
+
+                        if (rank == null) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.suffix.remove.failure.invalid_rank", rankName))
+                            return@anyExecutor
+                        }
+
+                        // Update
+                        rank.update { this.suffix = "" }
+
+                        // Send confirmation
+                        sender.sendMessage(sender.language.getCmp("command.ranks.suffix.remove.success", rankName))
+                    }
+                }
+            }
+        }
     }
 }
