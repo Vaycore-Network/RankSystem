@@ -49,7 +49,7 @@ class DisplayHandler : Listener {
             .forEach { it.removeEntry(player.name) }
 
         // Display prefix
-        if (Main.config.getBoolean("config.use-prefix"))
+        if (Main.config.getBoolean("config.use-prefix") && rank.prefix.isNotBlank())
             team.prefix(
                 MiniMessage.miniMessage().deserialize(
                     (Main.config.getString("config.prefix-format") ?: "\$prefix <gray>|</gray>")
@@ -58,7 +58,7 @@ class DisplayHandler : Listener {
             )
 
         // Display suffix
-        if (Main.config.getBoolean("config.use-suffix"))
+        if (Main.config.getBoolean("config.use-suffix") && rank.suffix.isNotBlank())
             team.suffix(
                 MiniMessage.miniMessage().deserialize(
                     (Main.config.getString("config.suffix-format") ?: "<gray>|</gray> \$suffix")
