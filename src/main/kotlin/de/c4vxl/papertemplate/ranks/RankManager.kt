@@ -52,9 +52,7 @@ object RankManager {
         if (hasRank(player, rank))
             return false
 
-        rank.apply {
-            rank.playerIDs.add(player.uniqueId)
-        }.save()
+        rank.update { rank.playerIDs.add(player.uniqueId) }
 
         // Trigger event
         RankPlayerAddEvent(rank, player).callEvent()
@@ -72,9 +70,7 @@ object RankManager {
         if (!hasRank(player, rank))
             return false
 
-        rank.apply {
-            rank.playerIDs.remove(player.uniqueId)
-        }.save()
+        rank.update { rank.playerIDs.remove(player.uniqueId) }
 
         // Trigger event
         RankPlayerRemoveEvent(rank, player).callEvent()

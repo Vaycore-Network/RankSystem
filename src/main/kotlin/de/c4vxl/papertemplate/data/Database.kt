@@ -64,6 +64,17 @@ object Database {
     }
 
     /**
+     * Apply changes to a given rank and save them
+     * @param name The name of the rank
+     * @param block The changes to apply
+     */
+    inline fun rank(name: String, block: Rank.() -> Unit): Boolean {
+        val rank = getRank(name) ?: return false
+        rank.apply(block)
+        return update(rank)
+    }
+
+    /**
      * Returns a list of all registered rank names
      */
     val registeredRanks: Map<String, Rank>

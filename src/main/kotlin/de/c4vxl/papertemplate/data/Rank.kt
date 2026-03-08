@@ -29,4 +29,13 @@ data class Rank(
      */
     fun save() =
         Database.update(this)
+
+    /**
+     * Apply changes to this rank and save them automatically
+     * @param block The changes to apply
+     */
+    inline fun update(block: Rank.() -> Unit): Boolean {
+        this.apply(block)
+        return save()
+    }
 }
