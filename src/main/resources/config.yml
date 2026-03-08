@@ -19,3 +19,10 @@ config:
 
   # The format used for displaying suffixes
   suffix-format: "<gray>|</gray> $suffix"
+
+language:
+  # Path to the languages database
+  db: "./languages.yml"
+
+  # The default language
+  default: "english"
