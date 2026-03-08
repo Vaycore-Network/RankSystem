@@ -1,3 +1,45 @@
 {
-  "": ""
+  "prefix": "<gray>[</gray><gold>RankSystem</gold><gray>]</gray>",
+  "sorry": "${prefix} <red>I am sorry!</red>",
+  "invalid-rank": "${sorry} But this rank doesn't exist!",,
+
+  "command.ranks.desc": "This command provides admins the option to manage the rank system.",
+  "command.ranks.register.failure.already": "${sorry} But this rank is already registered!",
+  "command.ranks.register.success": "${prefix} <green>Successfully registered rank</green> '$0'!",
+
+  "command.ranks.unregister.failure.already": "${sorry} But this rank doesn't seem to exist!",
+  "command.ranks.unregister.success": "${prefix} <green>Successfully unregistered rank</green> '$0'!",
+
+  "command.ranks.list.msg.empty": "${sorry} But there are no ranks registered as of now!",
+  "command.ranks.list.l1": "${prefix} There are the following ranks registered <gray>($0)</gray>:",
+  "command.ranks.list.l2": "<gray>-</gray> $0 <gray>(Position: $1; $2 player(s))</gray>",
+
+  "command.ranks.player.list.msg.empty": "${sorry} But the player <gray>$0</gray> has no ranks!",
+  "command.ranks.player.list.l1": "${prefix} <gray>$0</gray> has the following ranks <gray>($0)</gray>:",
+  "command.ranks.player.list.l2": "<gray>-</gray> $0 <gray>(Position: $1; $2 player(s))</gray>",
+
+  "command.ranks.player.add.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.player.add.failure.already": "${sorry} But this player already has the rank '<gray>$0</gray>'!",
+  "command.ranks.player.add.success": "${prefix} <green>Successfully added <white>$0</white> to</green> '$1'!",
+
+  "command.ranks.player.remove.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.player.remove.failure.not": "${sorry} But this player doesn't have the rank '<gray>$0</gray>'!",
+  "command.ranks.player.remove.success": "${prefix} <green>Successfully removed <white>$0</white> from</green> '$1'!",
+
+  "command.ranks.permission.add.success": "${prefix} <green>Successfully added permission to</green> '$0'!",
+  "command.ranks.permission.add.failure.invalid_rank": "${invalid-rank}",
+
+  "command.ranks.permission.remove.success": "${prefix} <green>Successfully removed permission from</green> '$0'!",
+  "command.ranks.permission.remove.failure.invalid_rank": "${invalid-rank}",
+
+  "command.ranks.permission.list.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.permission.list.msg.empty": "${sorry} But there are no permissions set for that rank!",
+  "command.ranks.permission.list.l1": "${prefix} There are the following permissions registered <gray>($0)</gray>:",
+  "command.ranks.permission.list.l2": "<gray>-</gray> $0",
+
+  "command.ranks.position.get.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.position.get.msg": "${prefix} Position of rank <gray>$0</gray>: $1",
+
+  "command.ranks.position.set.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.position.set.success": "${prefix} <green>Successfully updated position of</green> '$1'!"
 }

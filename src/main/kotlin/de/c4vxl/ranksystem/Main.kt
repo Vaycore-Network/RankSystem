@@ -1,5 +1,6 @@
 package de.c4vxl.ranksystem
 
+import de.c4vxl.ranksystem.plugin.command.RankCommand
 import de.c4vxl.ranksystem.plugin.handlers.DefaultRankHandler
 import de.c4vxl.ranksystem.plugin.handlers.DisplayHandler
 import dev.jorel.commandapi.CommandAPI
@@ -39,6 +40,9 @@ class Main : JavaPlugin() {
         // Register handlers
         DefaultRankHandler()
         DisplayHandler()
+
+        // Register commands
+        RankCommand
 
         logger.info("[+] $name has been enabled!")
     }
