@@ -58,7 +58,7 @@ class DisplayHandler : Listener {
 
         // Display suffix
         if (Main.config.getBoolean("config.use-suffix"))
-            team.prefix(
+            team.suffix(
                 MiniMessage.miniMessage().deserialize(
                     (Main.config.getString("config.suffix-format") ?: "<gray>|</gray> \$suffix")
                         .replace("\$suffix", rank.suffix)
