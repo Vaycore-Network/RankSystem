@@ -3,6 +3,13 @@ package de.c4vxl.papertemplate.data
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import de.c4vxl.papertemplate.Main
+import de.c4vxl.papertemplate.event.data.RankDBSaveEvent
+import de.c4vxl.papertemplate.event.data.RankRegisterEvent
+import de.c4vxl.papertemplate.event.data.RankUnregisterEvent
+import de.c4vxl.papertemplate.event.update.RankPermissionsUpdateEvent
+import de.c4vxl.papertemplate.event.update.RankPositionUpdateEvent
+import de.c4vxl.papertemplate.event.update.RankPrefixUpdateEvent
+import de.c4vxl.papertemplate.event.update.RankSuffixUpdateEvent
 import io.leangen.geantyref.TypeToken
 import java.io.File
 
@@ -79,6 +86,9 @@ object Database {
         // Write to config
         file.writeText(gson.toJson(rank))
 
+        // Trigger event
+        RankRegisterEvent(rank).callEvent()
+
         return true
     }
 
@@ -88,13 +98,13 @@ object Database {
      * @return Returns {@code true} if the action was successful
      */
     fun unregisterRank(rank: String): Boolean {
-        // Rank doesn't exist
-        // Return early
-        if (!rankExists(rank))
-            return false
+        val rankObject = registeredRanks[rank] ?: return false
 
         // Delete db entry
         dbDir.resolve(rank).delete()
+
+        // Trigger event
+        RankUnregisterEvent(rankObject).callEvent()
 
         return true
     }
@@ -104,13 +114,34 @@ object Database {
      * @param rank The updated rank
      */
     fun update(rank: Rank): Boolean {
-        // Rank doesn't exist
-        if (!rankExists(rank.name))
-            return false
+        val oldRank = registeredRanks[rank.name] ?: return false
 
         // Write to db
         dbDir.resolve(rank.name)
             .writeText(gson.toJson(rank))
+
+        // Trigger events
+        RankDBSaveEvent(rank).callEvent()
+        oldRank.let {
+            if (it.position != rank.position)
+                RankPositionUpdateEvent(rank, it.position, rank.position).callEvent()
+
+            if (it.prefix != rank.prefix)
+                RankPrefixUpdateEvent(rank, it.prefix, rank.prefix).callEvent()
+
+            if (it.suffix != rank.suffix)
+                RankSuffixUpdateEvent(rank, it.suffix, rank.suffix).callEvent()
+
+            it.permissions.forEach { perm ->
+                if (!rank.permissions.contains(perm))
+                    RankPermissionsUpdateEvent(rank, perm, false).callEvent()
+            }
+
+            rank.permissions.forEach { perm ->
+                if (!it.permissions.contains(perm))
+                    RankPermissionsUpdateEvent(rank, perm, true).callEvent()
+            }
+        }
 
         return true
     }
@@ -120,5 +151,5 @@ object Database {
      * @param rank The name of the rank
      */
     fun rankExists(rank: String): Boolean =
-        registeredRanks.keys.contains(rank)
+        dbDir.resolve(rank).exists()
 }

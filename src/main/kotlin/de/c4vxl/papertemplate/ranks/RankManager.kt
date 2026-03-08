@@ -2,6 +2,8 @@ package de.c4vxl.papertemplate.ranks
 
 import de.c4vxl.papertemplate.data.Database
 import de.c4vxl.papertemplate.data.Rank
+import de.c4vxl.papertemplate.event.update.RankPlayerAddEvent
+import de.c4vxl.papertemplate.event.update.RankPlayerRemoveEvent
 import org.bukkit.OfflinePlayer
 
 /**
@@ -54,6 +56,9 @@ object RankManager {
             rank.playerIDs.add(player.uniqueId)
         }.save()
 
+        // Trigger event
+        RankPlayerAddEvent(rank, player).callEvent()
+
         return true
     }
 
@@ -70,6 +75,9 @@ object RankManager {
         rank.apply {
             rank.playerIDs.remove(player.uniqueId)
         }.save()
+
+        // Trigger event
+        RankPlayerRemoveEvent(rank, player).callEvent()
 
         return true
     }
