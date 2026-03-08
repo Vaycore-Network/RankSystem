@@ -23,6 +23,9 @@ dependencies {
     // Command API
     implementation("dev.jorel:commandapi-paper-shade:11.1.0")
     implementation("dev.jorel:commandapi-kotlin-paper:11.1.0")
+
+    // JSON parsing
+    implementation("com.google.code.gson:gson:2.13.2")
 }
 
 kotlin {
