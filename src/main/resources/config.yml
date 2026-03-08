@@ -1,0 +1,7 @@
+config:
+  # Path to the directory the ranks should be stored in
+  db-path: "./ranks/"
+
+
+  # If set to true pretty printing will be enabled
+  db-pretty-print: true
