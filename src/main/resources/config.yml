@@ -7,3 +7,15 @@ config:
 
   # Set the default rank players will receive the first time they join
   # default: ""
+
+  # If set to false, no prefixes will be displayed
+  use-prefix: true
+
+  # If set to false, no suffixes will be displayed
+  use-suffix: true
+
+  # The format used for displaying prefixes
+  prefix-format: "$prefix <gray>|</gray>"
+
+  # The format used for displaying suffixes
+  suffix-format: "<gray>|</gray> $suffix"

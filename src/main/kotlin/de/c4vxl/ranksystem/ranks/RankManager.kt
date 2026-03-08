@@ -24,7 +24,7 @@ object RankManager {
      * @param player The player
      */
     fun getHighestRank(player: OfflinePlayer): Rank? =
-        getRanks(player).firstOrNull()
+        getRanks(player).firstOrNull() ?: Database.defaultRank?.let { Database.getRank(it) }
 
     /**
      * Returns {@code true} if a rank is the players highest one
