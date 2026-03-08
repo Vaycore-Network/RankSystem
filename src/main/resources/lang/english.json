@@ -1,7 +1,7 @@
 {
   "prefix": "<gray>[</gray><gold>RankSystem</gold><gray>]</gray>",
   "sorry": "${prefix} <red>I am sorry!</red>",
-  "invalid-rank": "${sorry} But this rank doesn't exist!",,
+  "invalid-rank": "${sorry} But this rank doesn't exist!",
 
   "command.ranks.desc": "This command provides admins the option to manage the rank system.",
   "command.ranks.register.failure.already": "${sorry} But this rank is already registered!",
