@@ -6,7 +6,7 @@ import de.c4vxl.ranksystem.Main
 import de.c4vxl.ranksystem.event.data.RankDBSaveEvent
 import de.c4vxl.ranksystem.event.data.RankRegisterEvent
 import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
-import de.c4vxl.ranksystem.event.update.RankPermissionsUpdateEvent
+import de.c4vxl.ranksystem.event.update.RankPermissionUpdateEvent
 import de.c4vxl.ranksystem.event.update.RankPositionUpdateEvent
 import de.c4vxl.ranksystem.event.update.RankPrefixUpdateEvent
 import de.c4vxl.ranksystem.event.update.RankSuffixUpdateEvent
@@ -153,8 +153,8 @@ object Database {
 
         val oldPerms = oldRank.permissions.toSet()
         val newPerms = rank.permissions.toSet()
-        (oldPerms - newPerms).forEach { RankPermissionsUpdateEvent(rank, it, false).callEvent() }
-        (newPerms - oldPerms).forEach { RankPermissionsUpdateEvent(rank, it, true).callEvent() }
+        (oldPerms - newPerms).forEach { RankPermissionUpdateEvent(rank, it, false).callEvent() }
+        (newPerms - oldPerms).forEach { RankPermissionUpdateEvent(rank, it, true).callEvent() }
 
         return true
     }

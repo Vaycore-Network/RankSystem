@@ -9,4 +9,4 @@ import de.c4vxl.ranksystem.event.type.RankEvent
  * @param permission The permission that was updated
  * @param value The new value
  */
-data class RankPermissionsUpdateEvent(val rank: Rank, val permission: String, val value: Boolean): RankEvent()
+data class RankPermissionUpdateEvent(val rank: Rank, val permission: String, val value: Boolean): RankEvent()
