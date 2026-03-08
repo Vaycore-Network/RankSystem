@@ -10,7 +10,6 @@ import de.c4vxl.papertemplate.event.update.RankPermissionsUpdateEvent
 import de.c4vxl.papertemplate.event.update.RankPositionUpdateEvent
 import de.c4vxl.papertemplate.event.update.RankPrefixUpdateEvent
 import de.c4vxl.papertemplate.event.update.RankSuffixUpdateEvent
-import io.leangen.geantyref.TypeToken
 import java.io.File
 
 /**
@@ -36,15 +35,13 @@ object Database {
     /**
      * Returns a gson instance
      */
-    val gson: Gson
-        get() = GsonBuilder()
-            .let {
-                if (isPrettyPrint)
-                    it.setPrettyPrinting()
-                else
-                    it
+    private val gson: Gson by lazy {
+        GsonBuilder()
+            .apply {
+                if (isPrettyPrint) this.setPrettyPrinting()
             }
             .create()
+    }
 
     /**
      * Holds the default rank a player will receive when joining for the first time
@@ -57,14 +54,24 @@ object Database {
         }
 
     /**
+     * Returns a rank object form it's db-name
+     * @param rank The name of the rank
+     */
+    fun getRank(rank: String): Rank? {
+        val file = dbDir.resolve("$rank.rank")
+        if (!file.exists()) return null
+        return gson.fromJson(file.readText(), Rank::class.java)
+    }
+
+    /**
      * Returns a list of all registered rank names
      */
     val registeredRanks: Map<String, Rank>
         get() = buildMap {
-            dbDir.listFiles()?.forEach {
+            dbDir.listFiles { f -> f.extension == "rank" }?.forEach {
                 put(
                     it.nameWithoutExtension,
-                    gson.fromJson(it.readText(), object : TypeToken<Rank>() {}.type)
+                    gson.fromJson(it.readText(), Rank::class.java)
                 )
             }
         }
@@ -75,7 +82,7 @@ object Database {
      * @return Returns {@code true} if the action was successful
      */
     fun registerRank(rank: Rank): Boolean {
-        val file = dbDir.resolve(rank.name)
+        val file = dbDir.resolve("${rank.name}.rank")
 
         // Try to create db file
         // If file exists, Rank already registered
@@ -98,10 +105,11 @@ object Database {
      * @return Returns {@code true} if the action was successful
      */
     fun unregisterRank(rank: String): Boolean {
-        val rankObject = registeredRanks[rank] ?: return false
+        val rankObject = getRank(rank) ?: return false
 
         // Delete db entry
-        dbDir.resolve(rank).delete()
+        if (!dbDir.resolve("$rank.rank").delete())
+            return false
 
         // Trigger event
         RankUnregisterEvent(rankObject).callEvent()
@@ -114,34 +122,28 @@ object Database {
      * @param rank The updated rank
      */
     fun update(rank: Rank): Boolean {
-        val oldRank = registeredRanks[rank.name] ?: return false
+        val oldRank = getRank(rank.name) ?: return false
 
         // Write to db
-        dbDir.resolve(rank.name)
+        dbDir.resolve("${rank.name}.rank")
             .writeText(gson.toJson(rank))
 
         // Trigger events
         RankDBSaveEvent(rank).callEvent()
-        oldRank.let {
-            if (it.position != rank.position)
-                RankPositionUpdateEvent(rank, it.position, rank.position).callEvent()
 
-            if (it.prefix != rank.prefix)
-                RankPrefixUpdateEvent(rank, it.prefix, rank.prefix).callEvent()
+        if (oldRank.position != rank.position)
+            RankPositionUpdateEvent(rank, oldRank.position, rank.position).callEvent()
 
-            if (it.suffix != rank.suffix)
-                RankSuffixUpdateEvent(rank, it.suffix, rank.suffix).callEvent()
+        if (oldRank.prefix != rank.prefix)
+            RankPrefixUpdateEvent(rank, oldRank.prefix, rank.prefix).callEvent()
 
-            it.permissions.forEach { perm ->
-                if (!rank.permissions.contains(perm))
-                    RankPermissionsUpdateEvent(rank, perm, false).callEvent()
-            }
+        if (oldRank.suffix != rank.suffix)
+            RankSuffixUpdateEvent(rank, oldRank.suffix, rank.suffix).callEvent()
 
-            rank.permissions.forEach { perm ->
-                if (!it.permissions.contains(perm))
-                    RankPermissionsUpdateEvent(rank, perm, true).callEvent()
-            }
-        }
+        val oldPerms = oldRank.permissions.toSet()
+        val newPerms = rank.permissions.toSet()
+        (oldPerms - newPerms).forEach { RankPermissionsUpdateEvent(rank, it, false).callEvent() }
+        (newPerms - oldPerms).forEach { RankPermissionsUpdateEvent(rank, it, true).callEvent() }
 
         return true
     }
@@ -151,5 +153,5 @@ object Database {
      * @param rank The name of the rank
      */
     fun rankExists(rank: String): Boolean =
-        dbDir.resolve(rank).exists()
+        dbDir.resolve("$rank.rank").exists()
 }
