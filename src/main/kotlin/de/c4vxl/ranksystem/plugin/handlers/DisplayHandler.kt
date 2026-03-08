@@ -5,6 +5,7 @@ import de.c4vxl.ranksystem.data.Database
 import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
+import de.c4vxl.ranksystem.event.update.RankPositionUpdateEvent
 import de.c4vxl.ranksystem.event.update.RankPrefixUpdateEvent
 import de.c4vxl.ranksystem.ranks.RankManager
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -93,6 +94,11 @@ class DisplayHandler : Listener {
             RankManager.getHighestRank(player) ?: return,
             player.player ?: return
         )
+    }
+
+    @EventHandler
+    fun onPositionChange(event: RankPositionUpdateEvent) {
+        event.rank.players.forEach { displayHighest(it) }
     }
 
     @EventHandler
