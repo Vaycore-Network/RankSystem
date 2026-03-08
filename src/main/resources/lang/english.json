@@ -57,5 +57,10 @@
   "command.ranks.suffix.set.failure.invalid_rank": "${invalid-rank}",
   "command.ranks.suffix.set.success": "${prefix} <green>Successfully updated suffix of</green> '$0'!",
   "command.ranks.suffix.remove.failure.invalid_rank": "${invalid-rank}",
-  "command.ranks.suffix.remove.success": "${prefix} <green>Successfully removed suffix of</green> '$0'!"
+  "command.ranks.suffix.remove.success": "${prefix} <green>Successfully removed suffix of</green> '$0'!",
+
+  "command.ranks.default.get.failure.none": "${sorry} But there is no default rank set!",
+  "command.ranks.default.get.msg": "${prefix} <gray>The default rank is currently set to</gray> '$0'",
+  "command.ranks.default.set.failure.invalid_rank": "${invalid-rank}",
+  "command.ranks.default.set.success": "${prefix} <green>Successfully set default rank to</green> '$0'!"
 }

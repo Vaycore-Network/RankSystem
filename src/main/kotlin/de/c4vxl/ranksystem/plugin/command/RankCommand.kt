@@ -418,5 +418,41 @@ object RankCommand {
                 }
             }
         }
+
+        literalArgument("default") {
+            literalArgument("get") {
+                anyExecutor { sender, _ ->
+                    val rank = Database.defaultRank?.let { Database.getRank(it) }
+
+                    if (rank == null) {
+                        sender.sendMessage(sender.language.getCmp("command.ranks.default.get.failure.none"))
+                        return@anyExecutor
+                    }
+
+                    // Send
+                    sender.sendMessage(sender.language.getCmp("command.ranks.default.get.msg", rank.name))
+                }
+            }
+
+            literalArgument("set") {
+                argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
+                    Database.registeredRanks.keys.toTypedArray()
+                })) {
+                    anyExecutor { sender, args ->
+                        val rankName = args.get("rank").toString()
+                        val rank = Database.getRank(rankName)
+
+                        if (rank == null) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.default.set.failure.invalid_rank"))
+                            return@anyExecutor
+                        }
+
+                        // Set
+                        Database.defaultRank = rank.name
+                        sender.sendMessage(sender.language.getCmp("command.ranks.default.set.success", rank.name))
+                    }
+                }
+            }
+        }
     }
 }
