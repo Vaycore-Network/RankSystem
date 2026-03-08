@@ -1,7 +1,7 @@
-package de.c4vxl.papertemplate.event.update
+package de.c4vxl.ranksystem.event.update
 
-import de.c4vxl.papertemplate.data.Rank
-import de.c4vxl.papertemplate.event.type.RankEvent
+import de.c4vxl.ranksystem.data.Rank
+import de.c4vxl.ranksystem.event.type.RankEvent
 
 /**
  * Gets triggered whenever a ranks position gets updated

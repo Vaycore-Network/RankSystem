@@ -1,8 +1,8 @@
-package de.c4vxl.papertemplate.plugin.handlers
+package de.c4vxl.ranksystem.plugin.handlers
 
-import de.c4vxl.papertemplate.Main
-import de.c4vxl.papertemplate.data.Database
-import de.c4vxl.papertemplate.ranks.RankManager
+import de.c4vxl.ranksystem.Main
+import de.c4vxl.ranksystem.data.Database
+import de.c4vxl.ranksystem.ranks.RankManager
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

@@ -1,6 +1,6 @@
-package de.c4vxl.papertemplate
+package de.c4vxl.ranksystem
 
-import de.c4vxl.papertemplate.plugin.handlers.DefaultRankHandler
+import de.c4vxl.ranksystem.plugin.handlers.DefaultRankHandler
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIPaperConfig
 import org.bukkit.configuration.file.FileConfiguration

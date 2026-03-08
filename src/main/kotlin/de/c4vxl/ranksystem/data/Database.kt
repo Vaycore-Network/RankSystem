@@ -1,15 +1,15 @@
-package de.c4vxl.papertemplate.data
+package de.c4vxl.ranksystem.data
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import de.c4vxl.papertemplate.Main
-import de.c4vxl.papertemplate.event.data.RankDBSaveEvent
-import de.c4vxl.papertemplate.event.data.RankRegisterEvent
-import de.c4vxl.papertemplate.event.data.RankUnregisterEvent
-import de.c4vxl.papertemplate.event.update.RankPermissionsUpdateEvent
-import de.c4vxl.papertemplate.event.update.RankPositionUpdateEvent
-import de.c4vxl.papertemplate.event.update.RankPrefixUpdateEvent
-import de.c4vxl.papertemplate.event.update.RankSuffixUpdateEvent
+import de.c4vxl.ranksystem.Main
+import de.c4vxl.ranksystem.event.data.RankDBSaveEvent
+import de.c4vxl.ranksystem.event.data.RankRegisterEvent
+import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
+import de.c4vxl.ranksystem.event.update.RankPermissionsUpdateEvent
+import de.c4vxl.ranksystem.event.update.RankPositionUpdateEvent
+import de.c4vxl.ranksystem.event.update.RankPrefixUpdateEvent
+import de.c4vxl.ranksystem.event.update.RankSuffixUpdateEvent
 import java.io.File
 
 /**

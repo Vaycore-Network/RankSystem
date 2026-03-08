@@ -1,9 +1,9 @@
-package de.c4vxl.papertemplate.ranks
+package de.c4vxl.ranksystem.ranks
 
-import de.c4vxl.papertemplate.data.Database
-import de.c4vxl.papertemplate.data.Rank
-import de.c4vxl.papertemplate.event.update.RankPlayerAddEvent
-import de.c4vxl.papertemplate.event.update.RankPlayerRemoveEvent
+import de.c4vxl.ranksystem.data.Database
+import de.c4vxl.ranksystem.data.Rank
+import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
+import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
 import org.bukkit.OfflinePlayer
 
 /**

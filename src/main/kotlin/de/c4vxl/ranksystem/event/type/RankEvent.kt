@@ -1,4 +1,4 @@
-package de.c4vxl.papertemplate.event.type
+package de.c4vxl.ranksystem.event.type
 
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList

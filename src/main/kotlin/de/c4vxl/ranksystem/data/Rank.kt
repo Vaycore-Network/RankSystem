@@ -1,4 +1,4 @@
-package de.c4vxl.papertemplate.data
+package de.c4vxl.ranksystem.data
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer

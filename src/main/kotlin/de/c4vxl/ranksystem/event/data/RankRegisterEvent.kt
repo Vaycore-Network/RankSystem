@@ -1,7 +1,7 @@
-package de.c4vxl.papertemplate.event.data
+package de.c4vxl.ranksystem.event.data
 
-import de.c4vxl.papertemplate.data.Rank
-import de.c4vxl.papertemplate.event.type.RankEvent
+import de.c4vxl.ranksystem.data.Rank
+import de.c4vxl.ranksystem.event.type.RankEvent
 
 /**
  * Gets triggered whenever a new rank is registered
