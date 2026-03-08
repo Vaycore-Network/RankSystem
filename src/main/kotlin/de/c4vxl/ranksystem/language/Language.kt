@@ -53,7 +53,10 @@ class Language(
          * Returns the path to the language db
          */
         private val langsDB
-            get() = File(Main.config.getString("language.db") ?: "languages.yml")
+            get() = File(Main.config.getString("language.db") ?: "languages.yml").also {
+                it.parentFile.mkdirs()
+                it.createNewFile()
+            }
 
         /**
          * Returns the default language set by the server
