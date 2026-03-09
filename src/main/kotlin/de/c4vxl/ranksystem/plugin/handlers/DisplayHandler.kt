@@ -12,7 +12,9 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.scoreboard.Scoreboard
 
 /**
  * Handles proper displaying of prefixes and suffixes
@@ -24,13 +26,13 @@ class DisplayHandler : Listener {
 
     /**
      * Returns the team used for displaying a rank to a player
-     * @param player The player to display the rank to
+     * @param scoreboard The scoreboard
      * @param rank The rank
      */
-    private fun getSBTeam(player: Player, rank: Rank) =
-        "rank_${rank.position}_${player.uniqueId}".let {
-            player.scoreboard.getTeam(it)
-                ?: player.scoreboard.registerNewTeam(it)
+    private fun getSBTeam(scoreboard: Scoreboard, rank: Rank) =
+        "rank_${rank.position}_${rank.name}".let {
+            scoreboard.getTeam(it)
+                ?: scoreboard.registerNewTeam(it)
         }
 
     /**
@@ -39,12 +41,12 @@ class DisplayHandler : Listener {
      * @param player The player to handle the displaying for
      */
     private fun handle(rank: Rank, player: Player) {
-        val team = getSBTeam(player, rank)
+        val team = getSBTeam(Bukkit.getScoreboardManager().mainScoreboard, rank)
 
         // Remove player from all other rank teams
         player.scoreboard.teams
             .filter { it.name.startsWith("rank_") }
-            .forEach { it.removeEntry(player.name) }
+            .forEach { it.removePlayer(player) }
 
         // Display prefix
         if (Main.config.getBoolean("config.use-prefix")) {
@@ -72,7 +74,7 @@ class DisplayHandler : Listener {
                 )
         }
 
-        team.addEntry(player.name)
+        team.addPlayer(player)
     }
 
     @EventHandler
@@ -89,6 +91,11 @@ class DisplayHandler : Listener {
             .filter { RankManager.isHighestRank(it, event.rank) }
             .mapNotNull { it.player }
             .forEach { handle(event.rank, it) }
+    }
+
+    @EventHandler
+    fun onWorldChange(event: PlayerChangedWorldEvent) {
+        displayHighest(event.player)
     }
 
     /**
