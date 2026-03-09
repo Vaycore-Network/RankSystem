@@ -454,5 +454,25 @@ object RankCommand {
                 }
             }
         }
+
+        literalArgument("language") {
+            argument(StringArgument("lang").replaceSuggestions(ArgumentSuggestions.strings {
+                Language.availableLanguages.toTypedArray()
+            })) {
+                anyExecutor { sender, args ->
+                    val lang = args.get("lang").toString()
+                    val language = Language.get(lang)
+
+                    if (language == null) {
+                        sender.sendMessage(sender.language.getCmp("command.ranks.language.failure.invalid", lang))
+                        return@anyExecutor
+                    }
+
+                    // Set
+                    sender.language = language
+                    sender.sendMessage(sender.language.getCmp("command.ranks.language.success", lang))
+                }
+            }
+        }
     }
 }

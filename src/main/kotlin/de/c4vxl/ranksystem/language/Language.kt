@@ -87,6 +87,12 @@ class Language(
             )!!
 
         /**
+         * Returns a list of all available languages
+         */
+        val availableLanguages: List<String>
+            get() = translationsDirectory.toFile().listFiles { f -> f.isFile }?.map { it.nameWithoutExtension }?.toList() ?: listOf()
+
+        /**
          * Holds the language of a player
          */
         var CommandSender.language: Language

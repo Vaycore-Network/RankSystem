@@ -62,5 +62,8 @@
   "command.ranks.default.get.failure.none": "${sorry} But there is no default rank set!",
   "command.ranks.default.get.msg": "${prefix} <gray>The default rank is currently set to</gray> '$0'",
   "command.ranks.default.set.failure.invalid_rank": "${invalid-rank}",
-  "command.ranks.default.set.success": "${prefix} <green>Successfully set default rank to</green> '$0'!"
+  "command.ranks.default.set.success": "${prefix} <green>Successfully set default rank to</green> '$0'!",
+
+  "command.ranks.language.failure.invalid": "${sorry} But the language <gray>'$0'</gray> doesn't exist!",
+  "command.ranks.language.success": "${prefix} <green>Successfully set language preference to</green> $0"
 }
