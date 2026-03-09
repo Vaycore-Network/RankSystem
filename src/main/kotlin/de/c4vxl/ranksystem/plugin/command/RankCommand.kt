@@ -108,9 +108,14 @@ object RankCommand {
                 }
 
                 literalArgument("add") {
-                    argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings { sender ->
+                    argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings { args ->
+                        val uuid = Bukkit.getOfflinePlayer(
+                            args.previousArgs.get("player")?.toString()
+                                ?: return@strings arrayOf()
+                        ).uniqueId
+
                         Database.registeredRanks
-                            .filter { !it.value.playerIDs.contains((sender.sender as? Player)?.uniqueId ?: return@filter true) }
+                            .filter { !it.value.playerIDs.contains(uuid) }
                             .keys
                             .toTypedArray()
                     })) {
@@ -140,9 +145,14 @@ object RankCommand {
                 }
 
                 literalArgument("remove") {
-                    argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings { sender ->
+                    argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings { args ->
+                        val uuid = Bukkit.getOfflinePlayer(
+                            args.previousArgs.get("player")?.toString()
+                                ?: return@strings arrayOf()
+                        ).uniqueId
+
                         Database.registeredRanks
-                            .filter { it.value.playerIDs.contains((sender.sender as? Player)?.uniqueId ?: return@filter true) }
+                            .filter { it.value.playerIDs.contains(uuid) }
                             .keys
                             .toTypedArray()
                     })) {
