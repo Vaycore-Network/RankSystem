@@ -70,7 +70,7 @@ object RankCommand {
                 }
 
                 // Send list
-                var component = sender.language.getCmp("command.ranks.list.l1")
+                var component = sender.language.getCmp("command.ranks.list.l1", registered.size.toString())
                 registered.values.sortedBy { it.position }.forEach {
                     component = component
                         .appendNewline()
@@ -97,7 +97,7 @@ object RankCommand {
                         }
 
                         // Send list
-                        var component = sender.language.getCmp("command.ranks.player.list.l1", name)
+                        var component = sender.language.getCmp("command.ranks.player.list.l1", name, ranks.size.toString())
                         ranks.sortedBy { it.position }.forEach {
                             component = component
                                 .appendNewline()

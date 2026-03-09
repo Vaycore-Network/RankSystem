@@ -15,7 +15,7 @@
   "command.ranks.list.l2": "<gray>-</gray> $0 <gray>(Position: $1; $2 player(s))</gray>",
 
   "command.ranks.player.list.msg.empty": "${sorry} But the player <gray>$0</gray> has no ranks!",
-  "command.ranks.player.list.l1": "${prefix} <gray>$0</gray> has the following ranks <gray>($0)</gray>:",
+  "command.ranks.player.list.l1": "${prefix} <gray>$0</gray> has the following ranks <gray>($1)</gray>:",
   "command.ranks.player.list.l2": "<gray>-</gray> $0 <gray>(Position: $1; $2 player(s))</gray>",
 
   "command.ranks.player.add.failure.invalid_rank": "${invalid-rank}",
