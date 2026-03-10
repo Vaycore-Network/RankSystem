@@ -9,7 +9,6 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.kotlindsl.*
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 
 /**
  * Command for managing the rank system from in-game
@@ -20,65 +19,6 @@ object RankCommand {
         withFullDescription(Language.default.get("commands.ranks.desc"))
         withAliases("ranksystem", "rs")
         withUsage("/ranks <option>")
-
-        literalArgument("register") {
-            textArgument("name") {
-                anyExecutor { sender, args ->
-                    val name = args.get("name").toString()
-
-                    // Rank already exists
-                    if (Database.rankExists(name)) {
-                        sender.sendMessage(sender.language.getCmp("command.ranks.register.failure.already"))
-                        return@anyExecutor
-                    }
-
-                    // Register rank
-                    Database.registerRank(Rank(name))
-                    sender.sendMessage(sender.language.getCmp("command.ranks.register.success", name))
-                }
-            }
-        }
-
-        literalArgument("unregister") {
-            argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                Database.registeredRanks.keys.toTypedArray()
-            })) {
-                anyExecutor { sender, args ->
-                    val rank = args.get("rank").toString()
-
-                    // Rank doesn't exist
-                    if (Database.rankExists(name)) {
-                        sender.sendMessage(sender.language.getCmp("command.ranks.unregister.failure.already"))
-                        return@anyExecutor
-                    }
-
-                    // Unregister
-                    Database.unregisterRank(rank)
-                    sender.sendMessage(sender.language.getCmp("command.ranks.unregister.success"))
-                }
-            }
-        }
-
-        literalArgument("list") {
-            anyExecutor { sender, _ ->
-                val registered = Database.registeredRanks
-
-                // No ranks registered
-                if (registered.isEmpty()) {
-                    sender.sendMessage(sender.language.getCmp("command.ranks.list.msg.empty"))
-                    return@anyExecutor
-                }
-
-                // Send list
-                var component = sender.language.getCmp("command.ranks.list.l1", registered.size.toString())
-                registered.values.sortedBy { it.position }.forEach {
-                    component = component
-                        .appendNewline()
-                        .append(sender.language.getCmp("command.ranks.list.l2", it.name, it.position, it.playerIDs.size.toString()))
-                }
-                sender.sendMessage(component)
-            }
-        }
 
         literalArgument("player") {
             argument(StringArgument("player").replaceSuggestions(ArgumentSuggestions.strings {
@@ -184,6 +124,65 @@ object RankCommand {
         }
 
         literalArgument("rank") {
+            literalArgument("register") {
+                textArgument("name") {
+                    anyExecutor { sender, args ->
+                        val name = args.get("name").toString()
+
+                        // Rank already exists
+                        if (Database.rankExists(name)) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.register.failure.already"))
+                            return@anyExecutor
+                        }
+
+                        // Register rank
+                        Database.registerRank(Rank(name))
+                        sender.sendMessage(sender.language.getCmp("command.ranks.register.success", name))
+                    }
+                }
+            }
+
+            literalArgument("unregister") {
+                argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
+                    Database.registeredRanks.keys.toTypedArray()
+                })) {
+                    anyExecutor { sender, args ->
+                        val rank = args.get("rank").toString()
+
+                        // Rank doesn't exist
+                        if (Database.rankExists(name)) {
+                            sender.sendMessage(sender.language.getCmp("command.ranks.unregister.failure.already"))
+                            return@anyExecutor
+                        }
+
+                        // Unregister
+                        Database.unregisterRank(rank)
+                        sender.sendMessage(sender.language.getCmp("command.ranks.unregister.success", rank))
+                    }
+                }
+            }
+
+            literalArgument("list") {
+                anyExecutor { sender, _ ->
+                    val registered = Database.registeredRanks
+
+                    // No ranks registered
+                    if (registered.isEmpty()) {
+                        sender.sendMessage(sender.language.getCmp("command.ranks.list.msg.empty"))
+                        return@anyExecutor
+                    }
+
+                    // Send list
+                    var component = sender.language.getCmp("command.ranks.list.l1", registered.size.toString())
+                    registered.values.sortedBy { it.position }.forEach {
+                        component = component
+                            .appendNewline()
+                            .append(sender.language.getCmp("command.ranks.list.l2", it.name, it.position, it.playerIDs.size.toString()))
+                    }
+                    sender.sendMessage(component)
+                }
+            }
+
             literalArgument("permission") {
                 argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
                     Database.registeredRanks.keys.toTypedArray()
