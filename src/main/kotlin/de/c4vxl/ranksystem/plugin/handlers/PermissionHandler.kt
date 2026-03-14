@@ -1,20 +1,19 @@
 package de.c4vxl.ranksystem.plugin.handlers
 
 import de.c4vxl.ranksystem.Main
-import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.update.RankPermissionUpdateEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
 import de.c4vxl.ranksystem.ranks.RankManager
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionAttachment
-import java.util.UUID
+import java.util.*
 
 /**
  * Handles the permissions of a rank
@@ -35,35 +34,42 @@ class PermissionHandler : Listener {
         attachments.getOrPut(player.uniqueId) { player.addAttachment(Main.instance) }
 
     /**
-     * Sets the value of a permission
-     * @param player The player
-     * @param value The new value of the permissions for that specific player
-     * @param permissions The permissions to update
+     * Rebuilds the players permissions
+     * @param offlinePlayer The player to rebuild the permissions for
+     *
+     * This will only work if the player is actually connected
+     * @return {@code true} if player was connected and permissions were actually updated
      */
-    private fun setPermissions(player: Player, value: Boolean, vararg permissions: String) {
-        // Permission is operator permission
-        if (permissions.contains("_all"))
-            player.isOp = value
-
-        // Set permission
+    private fun rebuildPermissions(offlinePlayer: OfflinePlayer): Boolean {
+        val player = offlinePlayer.player ?: return false
         val attachment = getAttachment(player)
-        permissions.forEach { attachment.setPermission(it, value) }
 
-        // Update player
-        player.updateCommands()
+        // Unset old permissions
+        attachment.permissions.keys.forEach {
+            attachment.unsetPermission(it)
+        }
+
+        // Add new permissions
+        RankManager.getRanks(player).forEach { rank ->
+            rank.permissions.forEach {
+                // If permission is called "_all": give player operator permissions
+                if (it == "_all") player.isOp = true
+
+                // Otherwise just add permission normally
+                else attachment.setPermission(it, true)
+            }
+        }
+
+        // Refresh player
         player.recalculatePermissions()
+        player.updateCommands()
+
+        return true
     }
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        RankManager.getRanks(event.player)
-            .forEach { rank ->
-                setPermissions(
-                    event.player.player ?: return,
-                    true,
-                    *rank.permissions.toTypedArray()
-                )
-            }
+        rebuildPermissions(event.player)
     }
 
     @EventHandler
@@ -75,36 +81,18 @@ class PermissionHandler : Listener {
 
     @EventHandler
     fun onRankRemove(event: RankPlayerRemoveEvent) {
-        setPermissions(
-            event.player.player ?: return,
-            false,
-            *event.rank.permissions.toTypedArray()
-        )
+        rebuildPermissions(event.player)
     }
 
     @EventHandler
     fun onRankAdd(event: RankPlayerAddEvent) {
-        setPermissions(
-            event.player.player ?: return,
-            true,
-            *event.rank.permissions.toTypedArray()
-        )
+        rebuildPermissions(event.player)
     }
 
     @EventHandler
     fun onPermissionUpdate(event: RankPermissionUpdateEvent) {
-        if (event.value)
-            event.rank.players
-                .mapNotNull { it.player }
-                .forEach { player ->
-                    setPermissions(player, true, *event.rank.permissions.toTypedArray())
-                }
-
-        else
-            event.rank.players
-                .mapNotNull { it.player }
-                .forEach { player ->
-                    setPermissions(player, false, *event.rank.permissions.toTypedArray())
-                }
+        event.rank.players.forEach {
+            rebuildPermissions(it)
+        }
     }
 }
