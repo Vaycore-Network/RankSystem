@@ -62,7 +62,9 @@ class PermissionHandler : Listener {
 
         // Refresh player
         player.recalculatePermissions()
-        player.updateCommands()
+        Bukkit.getScheduler().runTask(Main.instance, Runnable {
+            player.updateCommands()
+        })
 
         return true
     }
