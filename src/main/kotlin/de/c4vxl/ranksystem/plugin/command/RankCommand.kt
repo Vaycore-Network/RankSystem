@@ -209,7 +209,14 @@ object RankCommand {
 
                     literalArgument("remove") {
                         textArgument("permission") {
-                            includeSuggestions(ArgumentSuggestions.strings { arrayOf("_all") })
+                            includeSuggestions(ArgumentSuggestions.strings {
+                                buildList {
+                                    add("_all")
+                                    Database.getRank(it.previousArgs.get("rank").toString())?.permissions?.let {
+                                        addAll(it)
+                                    }
+                                }.toTypedArray()
+                            })
 
                             anyExecutor { sender, args ->
                                 val name = args.get("rank").toString()
