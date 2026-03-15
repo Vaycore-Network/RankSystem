@@ -15,7 +15,7 @@ import java.io.File
 /**
  * Central database
  */
-object Database {
+object RankDB {
     /**
      * Returns the directory where the database is stored
      */

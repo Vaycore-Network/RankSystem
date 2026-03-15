@@ -1,6 +1,6 @@
 package de.c4vxl.ranksystem.ranks
 
-import de.c4vxl.ranksystem.data.Database
+import de.c4vxl.ranksystem.data.RankDB
 import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
@@ -15,7 +15,7 @@ object RankManager {
      * @param player The player
      */
     fun getRanks(player: OfflinePlayer): List<Rank> =
-        Database.registeredRanks.values
+        RankDB.registeredRanks.values
             .filter { it.playerIDs.contains(player.uniqueId) }
             .sortedBy { it.position }
 
@@ -24,7 +24,7 @@ object RankManager {
      * @param player The player
      */
     fun getHighestRank(player: OfflinePlayer): Rank? =
-        getRanks(player).firstOrNull() ?: Database.defaultRank?.let { Database.getRank(it) }
+        getRanks(player).firstOrNull() ?: RankDB.defaultRank?.let { RankDB.getRank(it) }
 
     /**
      * Returns {@code true} if a rank is the players highest one

@@ -28,7 +28,7 @@ data class Rank(
      * Saves changes to database
      */
     fun save() =
-        Database.update(this)
+        RankDB.update(this)
 
     /**
      * Apply changes to this rank and save them automatically

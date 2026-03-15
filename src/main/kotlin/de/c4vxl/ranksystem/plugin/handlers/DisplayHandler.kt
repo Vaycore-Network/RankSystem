@@ -1,7 +1,6 @@
 package de.c4vxl.ranksystem.plugin.handlers
 
 import de.c4vxl.ranksystem.Main
-import de.c4vxl.ranksystem.data.Database
 import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
 import de.c4vxl.ranksystem.event.update.*
