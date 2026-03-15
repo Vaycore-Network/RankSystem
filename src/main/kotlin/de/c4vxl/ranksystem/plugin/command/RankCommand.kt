@@ -1,19 +1,24 @@
 package de.c4vxl.ranksystem.plugin.command
 
-import de.c4vxl.ranksystem.data.RankDB
 import de.c4vxl.ranksystem.data.Rank
+import de.c4vxl.ranksystem.data.RankDB
 import de.c4vxl.ranksystem.language.Language
-import de.c4vxl.ranksystem.language.Language.Companion.language
+import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
 import de.c4vxl.ranksystem.ranks.RankManager
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.kotlindsl.*
 import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 /**
  * Command for managing the rank system from in-game
  */
 object RankCommand {
+    fun language(sender: CommandSender) =
+        (sender as? Player)?.rankPlayer?.language ?: Language.default
+    
     val command = commandTree("ranks") {
         withPermission("de.c4vxl.ranksystem.perms.ranks")
         withFullDescription(Language.default.get("commands.ranks.desc"))
@@ -32,16 +37,16 @@ object RankCommand {
 
                         // No ranks registered
                         if (ranks.isEmpty()) {
-                            sender.sendMessage(sender.language.getCmp("command.ranks.player.list.msg.empty", name))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.player.list.msg.empty", name))
                             return@anyExecutor
                         }
 
                         // Send list
-                        var component = sender.language.getCmp("command.ranks.player.list.l1", name, ranks.size.toString())
+                        var component = language(sender).getCmp("command.ranks.player.list.l1", name, ranks.size.toString())
                         ranks.sortedBy { it.position }.forEach {
                             component = component
                                 .appendNewline()
-                                .append(sender.language.getCmp("command.ranks.player.list.l2", it.name, it.position, it.playerIDs.size.toString()))
+                                .append(language(sender).getCmp("command.ranks.player.list.l2", it.name, it.position, it.playerIDs.size.toString()))
                         }
                         sender.sendMessage(component)
                     }
@@ -67,19 +72,19 @@ object RankCommand {
 
                             // Rank doesn't exist
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.player.add.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.player.add.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
                             // Player already has the rank
                             if (RankManager.hasRank(player, rank)) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.player.add.failure.already", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.player.add.failure.already", rankName))
                                 return@anyExecutor
                             }
 
                             // Add rank
                             RankManager.addRank(player, rank)
-                            sender.sendMessage(sender.language.getCmp("command.ranks.player.add.success", name, rankName))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.player.add.success", name, rankName))
                         }
                     }
                 }
@@ -104,19 +109,19 @@ object RankCommand {
 
                             // Rank doesn't exist
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.player.remove.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.player.remove.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
                             // Player doesn't have the rank
                             if (!RankManager.hasRank(player, rank)) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.player.remove.failure.not", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.player.remove.failure.not", rankName))
                                 return@anyExecutor
                             }
 
                             // Remove rank
                             RankManager.removeRank(player, rank)
-                            sender.sendMessage(sender.language.getCmp("command.ranks.player.remove.success", name, rankName))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.player.remove.success", name, rankName))
                         }
                     }
                 }
@@ -131,13 +136,13 @@ object RankCommand {
 
                         // Rank already exists
                         if (RankDB.rankExists(name)) {
-                            sender.sendMessage(sender.language.getCmp("command.ranks.register.failure.already"))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.register.failure.already"))
                             return@anyExecutor
                         }
 
                         // Register rank
                         RankDB.registerRank(Rank(name))
-                        sender.sendMessage(sender.language.getCmp("command.ranks.register.success", name))
+                        sender.sendMessage(language(sender).getCmp("command.ranks.register.success", name))
                     }
                 }
             }
@@ -151,13 +156,13 @@ object RankCommand {
 
                         // Rank doesn't exist
                         if (RankDB.rankExists(name)) {
-                            sender.sendMessage(sender.language.getCmp("command.ranks.unregister.failure.already"))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.unregister.failure.already"))
                             return@anyExecutor
                         }
 
                         // Unregister
                         RankDB.unregisterRank(rank)
-                        sender.sendMessage(sender.language.getCmp("command.ranks.unregister.success", rank))
+                        sender.sendMessage(language(sender).getCmp("command.ranks.unregister.success", rank))
                     }
                 }
             }
@@ -168,16 +173,16 @@ object RankCommand {
 
                     // No ranks registered
                     if (registered.isEmpty()) {
-                        sender.sendMessage(sender.language.getCmp("command.ranks.list.msg.empty"))
+                        sender.sendMessage(language(sender).getCmp("command.ranks.list.msg.empty"))
                         return@anyExecutor
                     }
 
                     // Send list
-                    var component = sender.language.getCmp("command.ranks.list.l1", registered.size.toString())
+                    var component = language(sender).getCmp("command.ranks.list.l1", registered.size.toString())
                     registered.values.sortedBy { it.position }.forEach {
                         component = component
                             .appendNewline()
-                            .append(sender.language.getCmp("command.ranks.list.l2", it.name, it.position, it.playerIDs.size.toString()))
+                            .append(language(sender).getCmp("command.ranks.list.l2", it.name, it.position, it.playerIDs.size.toString()))
                     }
                     sender.sendMessage(component)
                 }
@@ -200,9 +205,9 @@ object RankCommand {
                                 }
 
                                 if (success)
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.permission.add.success", name))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.permission.add.success", name))
                                 else
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.permission.add.failure.invalid_rank", name))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.permission.add.failure.invalid_rank", name))
                             }
                         }
                     }
@@ -227,9 +232,9 @@ object RankCommand {
                                 }
 
                                 if (success)
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.permission.remove.success", name))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.permission.remove.success", name))
                                 else
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.permission.remove.failure.invalid_rank", name))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.permission.remove.failure.invalid_rank", name))
                             }
                         }
                     }
@@ -241,22 +246,22 @@ object RankCommand {
 
                             // Rank doesn't exit
                             if (permissions == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.permission.list.failure.invalid_rank", name))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.permission.list.failure.invalid_rank", name))
                                 return@anyExecutor
                             }
 
                             // No ranks registered
                             if (permissions.isEmpty()) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.permission.list.msg.empty", name))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.permission.list.msg.empty", name))
                                 return@anyExecutor
                             }
 
                             // Send list
-                            var component = sender.language.getCmp("command.ranks.permission.list.l1", name)
+                            var component = language(sender).getCmp("command.ranks.permission.list.l1", name)
                             permissions.sortedBy { if (it.startsWith("_")) "0$it" else "1$it" }.forEach {
                                 component = component
                                     .appendNewline()
-                                    .append(sender.language.getCmp("command.ranks.permission.list.l2", it))
+                                    .append(language(sender).getCmp("command.ranks.permission.list.l2", it))
                             }
                             sender.sendMessage(component)
                         }
@@ -274,12 +279,12 @@ object RankCommand {
                             val rank = RankDB.getRank(rankName)
 
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.position.get.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.position.get.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
                             // Send
-                            sender.sendMessage(sender.language.getCmp("command.ranks.position.get.msg", rankName, rank.position))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.position.get.msg", rankName, rank.position))
                         }
                     }
 
@@ -291,7 +296,7 @@ object RankCommand {
                                 val position = args.get("position").toString()
 
                                 if (rank == null) {
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.position.set.failure.invalid_rank", rankName))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.position.set.failure.invalid_rank", rankName))
                                     return@anyExecutor
                                 }
 
@@ -299,7 +304,7 @@ object RankCommand {
                                 rank.update { this.position = position }
 
                                 // Send confirmation
-                                sender.sendMessage(sender.language.getCmp("command.ranks.position.set.success", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.position.set.success", rankName))
                             }
                         }
                     }
@@ -316,17 +321,17 @@ object RankCommand {
                             val rank = RankDB.getRank(rankName)
 
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.prefix.get.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.prefix.get.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
                             if (rank.prefix.isBlank()) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.prefix.get.failure.blank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.prefix.get.failure.blank", rankName))
                                 return@anyExecutor
                             }
 
                             // Send
-                            sender.sendMessage(sender.language.getCmp("command.ranks.prefix.get.msg", rankName, rank.prefix))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.prefix.get.msg", rankName, rank.prefix))
                         }
                     }
 
@@ -338,7 +343,7 @@ object RankCommand {
                                 val prefix = args.get("prefix").toString()
 
                                 if (rank == null) {
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.prefix.set.failure.invalid_rank", rankName))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.prefix.set.failure.invalid_rank", rankName))
                                     return@anyExecutor
                                 }
 
@@ -346,7 +351,7 @@ object RankCommand {
                                 rank.update { this.prefix = prefix }
 
                                 // Send confirmation
-                                sender.sendMessage(sender.language.getCmp("command.ranks.prefix.set.success", rankName, prefix))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.prefix.set.success", rankName, prefix))
                             }
                         }
                     }
@@ -357,7 +362,7 @@ object RankCommand {
                             val rank = RankDB.getRank(rankName)
 
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.prefix.remove.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.prefix.remove.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
@@ -365,7 +370,7 @@ object RankCommand {
                             rank.update { this.prefix = "" }
 
                             // Send confirmation
-                            sender.sendMessage(sender.language.getCmp("command.ranks.prefix.remove.success", rankName))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.prefix.remove.success", rankName))
                         }
                     }
                 }
@@ -381,17 +386,17 @@ object RankCommand {
                             val rank = RankDB.getRank(rankName)
 
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.suffix.get.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.suffix.get.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
                             if (rank.suffix.isBlank()) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.suffix.get.failure.blank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.suffix.get.failure.blank", rankName))
                                 return@anyExecutor
                             }
 
                             // Send
-                            sender.sendMessage(sender.language.getCmp("command.ranks.suffix.get.msg", rankName, rank.suffix))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.suffix.get.msg", rankName, rank.suffix))
                         }
                     }
 
@@ -403,7 +408,7 @@ object RankCommand {
                                 val suffix = args.get("suffix").toString()
 
                                 if (rank == null) {
-                                    sender.sendMessage(sender.language.getCmp("command.ranks.suffix.set.failure.invalid_rank", rankName))
+                                    sender.sendMessage(language(sender).getCmp("command.ranks.suffix.set.failure.invalid_rank", rankName))
                                     return@anyExecutor
                                 }
 
@@ -411,7 +416,7 @@ object RankCommand {
                                 rank.update { this.suffix = suffix }
 
                                 // Send confirmation
-                                sender.sendMessage(sender.language.getCmp("command.ranks.suffix.set.success", rankName, suffix))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.suffix.set.success", rankName, suffix))
                             }
                         }
                     }
@@ -422,7 +427,7 @@ object RankCommand {
                             val rank = RankDB.getRank(rankName)
 
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.suffix.remove.failure.invalid_rank", rankName))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.suffix.remove.failure.invalid_rank", rankName))
                                 return@anyExecutor
                             }
 
@@ -430,7 +435,7 @@ object RankCommand {
                             rank.update { this.suffix = "" }
 
                             // Send confirmation
-                            sender.sendMessage(sender.language.getCmp("command.ranks.suffix.remove.success", rankName))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.suffix.remove.success", rankName))
                         }
                     }
                 }
@@ -442,12 +447,12 @@ object RankCommand {
                         val rank = RankDB.defaultRank?.let { RankDB.getRank(it) }
 
                         if (rank == null) {
-                            sender.sendMessage(sender.language.getCmp("command.ranks.default.get.failure.none"))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.default.get.failure.none"))
                             return@anyExecutor
                         }
 
                         // Send
-                        sender.sendMessage(sender.language.getCmp("command.ranks.default.get.msg", rank.name))
+                        sender.sendMessage(language(sender).getCmp("command.ranks.default.get.msg", rank.name))
                     }
                 }
 
@@ -460,13 +465,13 @@ object RankCommand {
                             val rank = RankDB.getRank(rankName)
 
                             if (rank == null) {
-                                sender.sendMessage(sender.language.getCmp("command.ranks.default.set.failure.invalid_rank"))
+                                sender.sendMessage(language(sender).getCmp("command.ranks.default.set.failure.invalid_rank"))
                                 return@anyExecutor
                             }
 
                             // Set
                             RankDB.defaultRank = rank.name
-                            sender.sendMessage(sender.language.getCmp("command.ranks.default.set.success", rank.name))
+                            sender.sendMessage(language(sender).getCmp("command.ranks.default.set.success", rank.name))
                         }
                     }
                 }
@@ -477,18 +482,18 @@ object RankCommand {
             argument(StringArgument("lang").replaceSuggestions(ArgumentSuggestions.strings {
                 Language.availableLanguages.toTypedArray()
             })) {
-                anyExecutor { sender, args ->
+                playerExecutor { player, args ->
                     val lang = args.get("lang").toString()
                     val language = Language.get(lang)
 
                     if (language == null) {
-                        sender.sendMessage(sender.language.getCmp("command.ranks.language.failure.invalid", lang))
-                        return@anyExecutor
+                        player.sendMessage(language(player).getCmp("command.ranks.language.failure.invalid", lang))
+                        return@playerExecutor
                     }
 
                     // Set
-                    sender.language = language
-                    sender.sendMessage(sender.language.getCmp("command.ranks.language.success", lang))
+                    player.rankPlayer.language = language
+                    player.sendMessage(language(player).getCmp("command.ranks.language.success", lang))
                 }
             }
         }

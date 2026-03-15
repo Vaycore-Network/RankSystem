@@ -72,7 +72,7 @@ class Language(
         /**
          * Returns the path to the language db
          */
-        private val langsDB
+        val langsDB
             get() = File(Main.config.getString("language.db") ?: "languages.yml").also {
                 it.parentFile.mkdirs()
                 it.createNewFile()
@@ -91,26 +91,6 @@ class Language(
          */
         val availableLanguages: List<String>
             get() = translationsDirectory.toFile().listFiles { f -> f.isFile }?.map { it.nameWithoutExtension }?.toList() ?: listOf()
-
-        /**
-         * Holds the language of a player
-         */
-        var CommandSender.language: Language
-            get() {
-                val player = this as? Player ?: return default
-                val lang = YamlConfiguration.loadConfiguration(langsDB)
-                    .getString(player.uniqueId.toString()) ?: return default
-
-                return get(lang) ?: default
-            }
-            set(value) {
-                val player = this as? Player ?: return
-
-                YamlConfiguration.loadConfiguration(langsDB).apply {
-                    this.set(player.uniqueId.toString(), value.name)
-                    this.save(langsDB)
-                }
-            }
     }
 
     /**
