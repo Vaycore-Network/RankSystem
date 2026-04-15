@@ -70,14 +70,14 @@ class DisplayHandler : Listener {
     fun onJoin(event: PlayerJoinEvent) {
         Bukkit.getScheduler().runTaskLater(Main.instance, Runnable {
             displayAll(event.player)
-        }, 10)
+        }, 5)
     }
 
     @EventHandler
     fun onWorldChange(event: PlayerChangedWorldEvent) {
         Bukkit.getScheduler().runTaskLater(Main.instance, Runnable {
             displayAll(event.player)
-        }, 10)
+        }, 5)
     }
 
     @EventHandler
