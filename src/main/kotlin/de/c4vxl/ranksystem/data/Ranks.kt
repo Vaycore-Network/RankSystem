@@ -151,7 +151,7 @@ object Ranks {
 
         // Save in db
         dbDir.resolve("${name}.rank")
-            .writeText(gson.toJson(cached))
+            .writeText(gson.toJson(cached.data))
     }
 
     /**
