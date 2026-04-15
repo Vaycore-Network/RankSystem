@@ -1,5 +1,7 @@
 package de.c4vxl.ranksystem.data
 
+import de.c4vxl.ranksystem.event.data.RankDataChangeEvent
+
 /**
  * Cache object
  */
@@ -12,5 +14,6 @@ data class RankCache(
      */
     fun makeDirty() {
         isDirty = true
+        RankDataChangeEvent(this.data).callEvent()
     }
 }

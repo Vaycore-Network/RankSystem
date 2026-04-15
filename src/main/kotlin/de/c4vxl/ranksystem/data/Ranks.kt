@@ -90,10 +90,8 @@ object Ranks {
     fun set(name: String, rank: Rank?) {
         if (rank == null)
             cache.remove(name)
-        else {
+        else
             cache[name] = RankCache(rank, true)
-            RankDataChangeEvent(rank).callEvent()
-        }
     }
 
     /**
