@@ -5,6 +5,7 @@ import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.data.Ranks
 import de.c4vxl.ranksystem.event.data.RankDataChangeEvent
 import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -39,9 +40,19 @@ class DisplayHandler : Listener {
         team.suffix(rank.suffix())
 
         // Get all players that should be displayed under that rank
-        val players = rank.players.filter {
-            (it.name?.let { n -> scoreboard.getEntryTeam(n) == null } ?: false) // Player not in a team
-                    && it.rankPlayer.isHighestRank(rank)                        // Rank is the highest rank of that player
+        val players = rank.players.filter { player ->
+                    // Player name should be cached or player should be online
+                    player.name != null
+
+                    // Player already has a team that wants to set a pre-/suffix
+                    // Don't overwrite that
+                    && scoreboard.getEntryTeam(player.name!!)?.let {
+                        it.prefix() == Component.empty() &&
+                                it.suffix() == Component.empty()
+                    } != false
+
+                    // Rank must be the highest rank for that player
+                    && player.rankPlayer.isHighestRank(rank)
         }
 
         // Add players
@@ -57,16 +68,16 @@ class DisplayHandler : Listener {
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        Bukkit.getScheduler().callSyncMethod(Main.instance) {
+        Bukkit.getScheduler().runTaskLater(Main.instance, Runnable {
             displayAll(event.player)
-        }
+        }, 10)
     }
 
     @EventHandler
     fun onWorldChange(event: PlayerChangedWorldEvent) {
-        Bukkit.getScheduler().callSyncMethod(Main.instance) {
+        Bukkit.getScheduler().runTaskLater(Main.instance, Runnable {
             displayAll(event.player)
-        }
+        }, 10)
     }
 
     @EventHandler

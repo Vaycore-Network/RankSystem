@@ -3,6 +3,7 @@ package de.c4vxl.ranksystem.data
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import de.c4vxl.ranksystem.Main
+import de.c4vxl.ranksystem.event.data.RankDataChangeEvent
 import de.c4vxl.ranksystem.event.data.RankRegisterEvent
 import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
 import org.bukkit.Bukkit
@@ -89,8 +90,10 @@ object Ranks {
     fun set(name: String, rank: Rank?) {
         if (rank == null)
             cache.remove(name)
-        else
+        else {
             cache[name] = RankCache(rank, true)
+            RankDataChangeEvent(rank).callEvent()
+        }
     }
 
     /**
