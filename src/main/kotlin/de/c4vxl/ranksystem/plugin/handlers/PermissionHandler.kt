@@ -1,7 +1,7 @@
 package de.c4vxl.ranksystem.plugin.handlers
 
 import de.c4vxl.ranksystem.Main
-import de.c4vxl.ranksystem.event.update.RankPermissionUpdateEvent
+import de.c4vxl.ranksystem.event.data.RankDataChangeEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
 import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
@@ -93,7 +93,7 @@ class PermissionHandler : Listener {
     }
 
     @EventHandler
-    fun onPermissionUpdate(event: RankPermissionUpdateEvent) {
+    fun onPermissionUpdate(event: RankDataChangeEvent) {
         event.rank.players.forEach {
             rebuildPermissions(it)
         }

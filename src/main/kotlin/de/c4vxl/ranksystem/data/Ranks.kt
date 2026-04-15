@@ -3,6 +3,8 @@ package de.c4vxl.ranksystem.data
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import de.c4vxl.ranksystem.Main
+import de.c4vxl.ranksystem.event.data.RankRegisterEvent
+import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
 import org.bukkit.Bukkit
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -89,6 +91,39 @@ object Ranks {
             cache.remove(name)
         else
             cache[name] = RankCache(rank, true)
+    }
+
+    /**
+     * Registers a rank in db
+     * @param rank The rank to register
+     */
+    fun register(rank: Rank): Boolean {
+        if (exists(rank.name))
+            return false
+
+        // Register rank
+        set(rank.name, rank)
+
+        // Call event
+        RankRegisterEvent(rank).callEvent()
+
+        return true
+    }
+
+    /**
+     * Unregisters a rank in db
+     * @param name The name of the rank to unregister
+     */
+    fun unregister(name: String): Boolean {
+        val rank = get(name) ?: return false
+
+        // Call event
+        RankUnregisterEvent(rank).callEvent()
+
+        // Register rank
+        set(name, null)
+
+        return true
     }
 
     /**

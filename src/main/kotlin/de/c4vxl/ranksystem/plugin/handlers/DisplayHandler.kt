@@ -2,18 +2,11 @@ package de.c4vxl.ranksystem.plugin.handlers
 
 import de.c4vxl.ranksystem.Main
 import de.c4vxl.ranksystem.data.Rank
-import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
-import de.c4vxl.ranksystem.event.update.*
-import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerChangedWorldEvent
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.scoreboard.Scoreboard
 
 /**
@@ -78,66 +71,5 @@ class DisplayHandler : Listener {
         team.addPlayer(player)
     }
 
-    @EventHandler
-    fun onPrefixUpdate(event: RankPrefixUpdateEvent) {
-        event.rank.players
-            .filter { it.rankPlayer.isHighestRank(event.rank) }
-            .mapNotNull { it.player }
-            .forEach { handle(event.rank, it) }
-    }
-
-    @EventHandler
-    fun onSuffixUpdate(event: RankSuffixUpdateEvent) {
-        event.rank.players
-            .filter { it.rankPlayer.isHighestRank(event.rank) }
-            .mapNotNull { it.player }
-            .forEach { handle(event.rank, it) }
-    }
-
-    @EventHandler
-    fun onWorldChange(event: PlayerChangedWorldEvent) {
-        displayHighest(event.player)
-    }
-
-    /**
-     * Displays a players highest rank
-     * @param player The player
-     */
-    private fun displayHighest(player: OfflinePlayer) {
-        handle(
-            player.rankPlayer.highestRank ?: return,
-            player.player ?: return
-        )
-    }
-
-    @EventHandler
-    fun onPositionChange(event: RankPositionUpdateEvent) {
-        // Delete old team
-        getSBTeam(event.oldPosition, event.rank.name)
-            .unregister()
-
-        event.rank.players.forEach { displayHighest(it) }
-    }
-
-    @EventHandler
-    fun onUnregister(event: RankUnregisterEvent) {
-        // Delete team
-        getSBTeam(event.rank.position, event.rank.name)
-            .unregister()
-    }
-
-    @EventHandler
-    fun onJoin(event: PlayerJoinEvent) {
-        displayHighest(event.player)
-    }
-
-    @EventHandler
-    fun onRemove(event: RankPlayerRemoveEvent) {
-        displayHighest(event.player.bukkitPlayer)
-    }
-
-    @EventHandler
-    fun onAdd(event: RankPlayerAddEvent) {
-        displayHighest(event.player.bukkitPlayer)
-    }
+    // TODO: implement
 }

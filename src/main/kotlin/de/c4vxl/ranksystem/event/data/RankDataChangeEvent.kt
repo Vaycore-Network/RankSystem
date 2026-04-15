@@ -4,9 +4,9 @@ import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.type.RankEvent
 
 /**
- * Triggered when a rank is being registered
- * @param rank The rank
+ * Triggered when a ranks data gets modified
+ * @param rank The rank that was modified
  */
-data class RankRegisterEvent(
+data class RankDataChangeEvent(
     val rank: Rank
 ): RankEvent()

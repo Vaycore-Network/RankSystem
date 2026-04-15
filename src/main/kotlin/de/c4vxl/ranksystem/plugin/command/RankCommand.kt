@@ -133,15 +133,11 @@ object RankCommand {
                     anyExecutor { sender, args ->
                         val name = args.get("name").toString()
 
-                        // Rank already exists
-                        if (Ranks.exists(name)) {
-                            sender.sendMessage(language(sender).getCmp("command.ranks.register.failure.already"))
-                            return@anyExecutor
-                        }
-
                         // Register rank
-                        Ranks.set(name, Rank(name))
-                        sender.sendMessage(language(sender).getCmp("command.ranks.register.success", name))
+                        val success = Ranks.register(Rank(name))
+
+                        if (success) sender.sendMessage(language(sender).getCmp("command.ranks.register.success", name))
+                        else sender.sendMessage(language(sender).getCmp("command.ranks.register.failure.already"))
                     }
                 }
             }
@@ -153,15 +149,9 @@ object RankCommand {
                     anyExecutor { sender, args ->
                         val rank = args.get("rank").toString()
 
-                        // Rank exists
-                        if (Ranks.exists(name)) {
-                            sender.sendMessage(language(sender).getCmp("command.ranks.unregister.failure.already"))
-                            return@anyExecutor
-                        }
-
                         // Unregister
-                        Ranks.set(name, null)
-                        sender.sendMessage(language(sender).getCmp("command.ranks.unregister.success", rank))
+                        if (Ranks.unregister(rank)) sender.sendMessage(language(sender).getCmp("command.ranks.unregister.success", rank))
+                        else sender.sendMessage(language(sender).getCmp("command.ranks.unregister.failure.already"))
                     }
                 }
             }

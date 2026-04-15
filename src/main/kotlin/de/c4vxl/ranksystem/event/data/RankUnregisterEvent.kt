@@ -4,7 +4,9 @@ import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.type.RankEvent
 
 /**
- * Gets triggered whenever a new rank is unregistered
- * @param rank The rank that has been unregistered
+ * Triggered when a rank gets removed
+ * @param rank The rank that was removed
  */
-data class RankUnregisterEvent(val rank: Rank): RankEvent()
+data class RankUnregisterEvent(
+    val rank: Rank
+): RankEvent()
