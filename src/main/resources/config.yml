@@ -5,6 +5,9 @@ config:
   # If set to true pretty printing will be enabled
   db-pretty-print: true
 
+  # Interval of automatic cache saves (in minutes)
+  cache-save-interval: 18000 # 5 hours
+
   # Set the default rank players will receive the first time they join
   # default: ""
 

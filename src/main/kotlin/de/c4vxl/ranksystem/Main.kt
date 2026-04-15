@@ -1,5 +1,6 @@
 package de.c4vxl.ranksystem
 
+import de.c4vxl.ranksystem.data.Ranks
 import de.c4vxl.ranksystem.language.Language
 import de.c4vxl.ranksystem.plugin.command.RankCommand
 import de.c4vxl.ranksystem.plugin.handlers.DefaultRankHandler
@@ -41,6 +42,9 @@ class Main : JavaPlugin() {
 
         // Load langs
         Language.load()
+
+        // Load cache
+        Ranks
 
         // Register handlers
         DefaultRankHandler()

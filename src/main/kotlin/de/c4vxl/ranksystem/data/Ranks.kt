@@ -3,6 +3,7 @@ package de.c4vxl.ranksystem.data
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import de.c4vxl.ranksystem.Main
+import org.bukkit.Bukkit
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -30,6 +31,11 @@ object Ranks {
     init {
         // Load all ranks into cache
         dbDir.listFiles { f -> f.extension == "rank" }?.forEach { get(it.nameWithoutExtension) }
+
+        // Register cache autosave
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.instance, Runnable {
+            saveAll()
+        }, 0, Main.config.getInt("config.cache-save-interval", 18000) * 20L)
     }
 
     /**
