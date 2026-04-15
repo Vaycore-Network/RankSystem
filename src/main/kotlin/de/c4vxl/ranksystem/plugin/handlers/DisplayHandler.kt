@@ -2,12 +2,15 @@ package de.c4vxl.ranksystem.plugin.handlers
 
 import de.c4vxl.ranksystem.Main
 import de.c4vxl.ranksystem.data.Rank
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
+import de.c4vxl.ranksystem.data.Ranks
+import de.c4vxl.ranksystem.event.data.RankDataChangeEvent
+import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.scoreboard.Scoreboard
+import org.bukkit.event.player.PlayerChangedWorldEvent
+import org.bukkit.event.player.PlayerJoinEvent
 
 /**
  * Handles proper displaying of prefixes and suffixes
@@ -17,59 +20,60 @@ class DisplayHandler : Listener {
         Bukkit.getPluginManager().registerEvents(this, Main.instance)
     }
 
-    private fun getSBTeam(position: String, rank: String, scoreboard: Scoreboard = Bukkit.getScoreboardManager().mainScoreboard) =
-        /**
-         * Returns the team used for displaying a rank to a player
-         * @param position The position of the rank
-         * @param rank The name of the rank
-         * @param scoreboard The scoreboard
-         */
-        "rank_${position}_${rank}".let {
-            scoreboard.getTeam(it)
-                ?: scoreboard.registerNewTeam(it)
-        }
-
     /**
-     * Handles the displaying of a given rank
-     * @param rank The rank
-     * @param player The player to handle the displaying for
+     * Handles the displaying of a specific rank for a specific viewer
+     * @param rank The rank to render
+     * @param viewer The viewer to render it to
      */
-    private fun handle(rank: Rank, player: Player) {
-        val team = getSBTeam(rank.position, rank.name)
-
-        // Remove player from all other rank teams
-        player.scoreboard.teams
-            .filter { it.name.startsWith("rank_") }
-            .forEach { it.removePlayer(player) }
-
-        // Display prefix
-        if (Main.config.getBoolean("config.use-prefix")) {
-            if (rank.prefix == "")
-                team.prefix(Component.empty())
-            else
-                team.prefix(
-                    MiniMessage.miniMessage().deserialize(
-                        (Main.config.getString("config.prefix-format") ?: "\$prefix <gray>|</gray>")
-                            .replace("\$prefix", rank.prefix)
-                    )
-                )
+    fun display(rank: Rank, viewer: Player) {
+        val scoreboard = viewer.scoreboard
+        val team = "${rank.position}_rank_${rank.name}".take(16).let {
+            scoreboard.getTeam(it) ?: scoreboard.registerNewTeam(it)
         }
 
-        // Display suffix
-        if (Main.config.getBoolean("config.use-suffix")) {
-            if (rank.suffix == "")
-                team.suffix(Component.empty())
-            else
-                team.suffix(
-                    MiniMessage.miniMessage().deserialize(
-                        (Main.config.getString("config.suffix-format") ?: "<gray>|</gray> \$suffix")
-                            .replace("\$suffix", rank.suffix)
-                    )
-                )
+        // Remove entries to prevent clashing
+        team.removeEntries(team.entries)
+
+        // Set pre/suffix
+        team.prefix(rank.prefix())
+        team.suffix(rank.suffix())
+
+        // Get all players that should be displayed under that rank
+        val players = rank.players.filter {
+            (it.name?.let { n -> scoreboard.getEntryTeam(n) == null } ?: false) // Player not in a team
+                    && it.rankPlayer.isHighestRank(rank)                        // Rank is the highest rank of that player
         }
 
-        team.addPlayer(player)
+        // Add players
+        team.addEntries(players.map { it.name })
     }
 
-    // TODO: implement
+    /**
+     * Renders all ranks to a player
+     * @param viewer The player to render the ranks to
+     */
+    fun displayAll(viewer: Player) =
+        Ranks.registeredRanks.values.forEach { display(it, viewer) }
+
+    @EventHandler
+    fun onJoin(event: PlayerJoinEvent) {
+        Bukkit.getScheduler().callSyncMethod(Main.instance) {
+            displayAll(event.player)
+        }
+    }
+
+    @EventHandler
+    fun onWorldChange(event: PlayerChangedWorldEvent) {
+        Bukkit.getScheduler().callSyncMethod(Main.instance) {
+            displayAll(event.player)
+        }
+    }
+
+    @EventHandler
+    fun onUpdate(event: RankDataChangeEvent) {
+        Bukkit.getScheduler().callSyncMethod(Main.instance) {
+            // Display change to all players
+            Bukkit.getOnlinePlayers().forEach { display(event.rank, it) }
+        }
+    }
 }

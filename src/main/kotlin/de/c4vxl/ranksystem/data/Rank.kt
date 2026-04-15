@@ -1,5 +1,8 @@
 package de.c4vxl.ranksystem.data
 
+import de.c4vxl.ranksystem.Main
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import java.util.*
@@ -23,4 +26,28 @@ data class Rank(
 ) {
     val players: List<OfflinePlayer>
         get() = playerIDs.map { Bukkit.getOfflinePlayer(it) }
+
+    /**
+     * Returns the prefix as a component
+     */
+    fun prefix(): Component? =
+        if (Main.config.getBoolean("config.use-prefix") && prefix.isNotBlank())
+            MiniMessage.miniMessage().deserialize(
+                (Main.config.getString("config.prefix-format") ?: "\$prefix <gray>|</gray>")
+                    .replace("\$prefix", prefix)
+            )
+
+        else null
+
+    /**
+     * Returns the suffix as a component
+     */
+    fun suffix(): Component? =
+        if (Main.config.getBoolean("config.use-suffix") && suffix.isNotBlank())
+            MiniMessage.miniMessage().deserialize(
+                (Main.config.getString("config.suffix-format") ?: "\$suffix <gray>|</gray>")
+                    .replace("\$suffix", suffix)
+            )
+
+        else null
 }

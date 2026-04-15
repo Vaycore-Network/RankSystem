@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 
 /**
  * A wrapper around the normal bukkit player
- * @param bukkitPLayer The bukkit player instance
+ * @param bukkitPlayer The bukkit player instance
  */
 class RankPlayer(
     val bukkitPlayer: OfflinePlayer
