@@ -61,6 +61,9 @@ class Main : JavaPlugin() {
         // Disable CommandAPI
         CommandAPI.onDisable()
 
+        // Save cache
+        Ranks.saveAll()
+
         logger.info("[+] $name has been disabled!")
     }
 }
