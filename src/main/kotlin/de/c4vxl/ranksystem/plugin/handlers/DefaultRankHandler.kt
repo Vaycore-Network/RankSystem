@@ -1,8 +1,8 @@
 package de.c4vxl.ranksystem.plugin.handlers
 
 import de.c4vxl.ranksystem.Main
-import de.c4vxl.ranksystem.data.RankDB
-import de.c4vxl.ranksystem.ranks.RankManager
+import de.c4vxl.ranksystem.data.Ranks
+import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -19,15 +19,13 @@ class DefaultRankHandler : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
         // Player already has a rank
-        if (RankManager.getRanks(event.player).isNotEmpty())
+        if (event.player.rankPlayer.ranks.isNotEmpty())
             return
 
         // Get default rank
-        val defaultRank = RankDB.getRank(
-            RankDB.defaultRank ?: return
-        ) ?: return
+        val defaultRank = Ranks.getDefaultRank() ?: return
 
         // Add player to default rank
-        RankManager.addRank(event.player, defaultRank)
+        event.player.rankPlayer.addRank(defaultRank)
     }
 }

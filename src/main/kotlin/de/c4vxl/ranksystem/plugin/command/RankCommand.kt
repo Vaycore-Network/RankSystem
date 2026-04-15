@@ -1,10 +1,9 @@
 package de.c4vxl.ranksystem.plugin.command
 
 import de.c4vxl.ranksystem.data.Rank
-import de.c4vxl.ranksystem.data.RankDB
+import de.c4vxl.ranksystem.data.Ranks
 import de.c4vxl.ranksystem.language.Language
 import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
-import de.c4vxl.ranksystem.ranks.RankManager
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.kotlindsl.*
@@ -33,7 +32,7 @@ object RankCommand {
                     anyExecutor { sender, args ->
                         val name = args.get("player").toString()
                         val player = Bukkit.getOfflinePlayer(name)
-                        val ranks = RankManager.getRanks(player)
+                        val ranks = player.rankPlayer.ranks
 
                         // No ranks registered
                         if (ranks.isEmpty()) {
@@ -59,7 +58,7 @@ object RankCommand {
                                 ?: return@strings arrayOf()
                         ).uniqueId
 
-                        RankDB.registeredRanks
+                        Ranks.registeredRanks
                             .filter { !it.value.playerIDs.contains(uuid) }
                             .keys
                             .toTypedArray()
@@ -68,7 +67,7 @@ object RankCommand {
                             val name = args.get("player").toString()
                             val player = Bukkit.getOfflinePlayer(name)
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             // Rank doesn't exist
                             if (rank == null) {
@@ -77,13 +76,13 @@ object RankCommand {
                             }
 
                             // Player already has the rank
-                            if (RankManager.hasRank(player, rank)) {
+                            if (player.rankPlayer.hasRank(rank)) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.player.add.failure.already", rankName))
                                 return@anyExecutor
                             }
 
                             // Add rank
-                            RankManager.addRank(player, rank)
+                            player.rankPlayer.addRank(rank)
                             sender.sendMessage(language(sender).getCmp("command.ranks.player.add.success", name, rankName))
                         }
                     }
@@ -96,7 +95,7 @@ object RankCommand {
                                 ?: return@strings arrayOf()
                         ).uniqueId
 
-                        RankDB.registeredRanks
+                        Ranks.registeredRanks
                             .filter { it.value.playerIDs.contains(uuid) }
                             .keys
                             .toTypedArray()
@@ -105,7 +104,7 @@ object RankCommand {
                             val name = args.get("player").toString()
                             val player = Bukkit.getOfflinePlayer(name)
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             // Rank doesn't exist
                             if (rank == null) {
@@ -114,13 +113,13 @@ object RankCommand {
                             }
 
                             // Player doesn't have the rank
-                            if (!RankManager.hasRank(player, rank)) {
+                            if (!player.rankPlayer.hasRank(rank)) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.player.remove.failure.not", rankName))
                                 return@anyExecutor
                             }
 
                             // Remove rank
-                            RankManager.removeRank(player, rank)
+                            player.rankPlayer.removeRank(rank)
                             sender.sendMessage(language(sender).getCmp("command.ranks.player.remove.success", name, rankName))
                         }
                     }
@@ -135,13 +134,13 @@ object RankCommand {
                         val name = args.get("name").toString()
 
                         // Rank already exists
-                        if (RankDB.rankExists(name)) {
+                        if (Ranks.exists(name)) {
                             sender.sendMessage(language(sender).getCmp("command.ranks.register.failure.already"))
                             return@anyExecutor
                         }
 
                         // Register rank
-                        RankDB.registerRank(Rank(name))
+                        Ranks.set(name, Rank(name))
                         sender.sendMessage(language(sender).getCmp("command.ranks.register.success", name))
                     }
                 }
@@ -149,19 +148,19 @@ object RankCommand {
 
             literalArgument("unregister") {
                 argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                    RankDB.registeredRanks.keys.toTypedArray()
+                    Ranks.registeredRanks.keys.toTypedArray()
                 })) {
                     anyExecutor { sender, args ->
                         val rank = args.get("rank").toString()
 
-                        // Rank doesn't exist
-                        if (RankDB.rankExists(name)) {
+                        // Rank exists
+                        if (Ranks.exists(name)) {
                             sender.sendMessage(language(sender).getCmp("command.ranks.unregister.failure.already"))
                             return@anyExecutor
                         }
 
                         // Unregister
-                        RankDB.unregisterRank(rank)
+                        Ranks.set(name, null)
                         sender.sendMessage(language(sender).getCmp("command.ranks.unregister.success", rank))
                     }
                 }
@@ -169,7 +168,7 @@ object RankCommand {
 
             literalArgument("list") {
                 anyExecutor { sender, _ ->
-                    val registered = RankDB.registeredRanks
+                    val registered = Ranks.registeredRanks
 
                     // No ranks registered
                     if (registered.isEmpty()) {
@@ -190,7 +189,7 @@ object RankCommand {
 
             literalArgument("permission") {
                 argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                    RankDB.registeredRanks.keys.toTypedArray()
+                    Ranks.registeredRanks.keys.toTypedArray()
                 })) {
                     literalArgument("add") {
                         textArgument("permission") {
@@ -200,7 +199,7 @@ object RankCommand {
                                 val name = args.get("rank").toString()
                                 val permission = args.get("permission").toString()
 
-                                val success = RankDB.rank(name) {
+                                val success = Ranks.modify(name) {
                                     this.permissions.add(permission)
                                 }
 
@@ -217,7 +216,7 @@ object RankCommand {
                             includeSuggestions(ArgumentSuggestions.strings {
                                 buildList {
                                     add("_all")
-                                    RankDB.getRank(it.previousArgs.get("rank").toString())?.permissions?.let {
+                                    Ranks.get(it.previousArgs.get("rank").toString())?.permissions?.let {
                                         addAll(it)
                                     }
                                 }.toTypedArray()
@@ -227,7 +226,7 @@ object RankCommand {
                                 val name = args.get("rank").toString()
                                 val permission = args.get("permission").toString()
 
-                                val success = RankDB.rank(name) {
+                                val success = Ranks.modify(name) {
                                     this.permissions.remove(permission)
                                 }
 
@@ -242,7 +241,7 @@ object RankCommand {
                     literalArgument("list") {
                         anyExecutor { sender, args ->
                             val name = args.get("rank").toString()
-                            val permissions = RankDB.getRank(name)?.permissions
+                            val permissions = Ranks.get(name)?.permissions
 
                             // Rank doesn't exit
                             if (permissions == null) {
@@ -271,12 +270,12 @@ object RankCommand {
 
             literalArgument("position") {
                 argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                    RankDB.registeredRanks.keys.toTypedArray()
+                    Ranks.registeredRanks.keys.toTypedArray()
                 })) {
                     literalArgument("get") {
                         anyExecutor { sender, args ->
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             if (rank == null) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.position.get.failure.invalid_rank", rankName))
@@ -292,7 +291,7 @@ object RankCommand {
                         textArgument("position") {
                             anyExecutor { sender, args ->
                                 val rankName = args.get("rank").toString()
-                                val rank = RankDB.getRank(rankName)
+                                val rank = Ranks.get(rankName)
                                 val position = args.get("position").toString()
 
                                 if (rank == null) {
@@ -301,7 +300,7 @@ object RankCommand {
                                 }
 
                                 // Update
-                                rank.update { this.position = position }
+                                Ranks.modify(rankName) { this.position = position }
 
                                 // Send confirmation
                                 sender.sendMessage(language(sender).getCmp("command.ranks.position.set.success", rankName))
@@ -313,12 +312,12 @@ object RankCommand {
 
             literalArgument("prefix") {
                 argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                    RankDB.registeredRanks.keys.toTypedArray()
+                    Ranks.registeredRanks.keys.toTypedArray()
                 })) {
                     literalArgument("get") {
                         anyExecutor { sender, args ->
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             if (rank == null) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.prefix.get.failure.invalid_rank", rankName))
@@ -339,7 +338,7 @@ object RankCommand {
                         greedyStringArgument("prefix") {
                             anyExecutor { sender, args ->
                                 val rankName = args.get("rank").toString()
-                                val rank = RankDB.getRank(rankName)
+                                val rank = Ranks.get(rankName)
                                 val prefix = args.get("prefix").toString()
 
                                 if (rank == null) {
@@ -348,7 +347,7 @@ object RankCommand {
                                 }
 
                                 // Update
-                                rank.update { this.prefix = prefix }
+                                Ranks.modify(rankName) { this.prefix = prefix }
 
                                 // Send confirmation
                                 sender.sendMessage(language(sender).getCmp("command.ranks.prefix.set.success", rankName, prefix))
@@ -359,7 +358,7 @@ object RankCommand {
                     literalArgument("remove") {
                         anyExecutor { sender, args ->
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             if (rank == null) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.prefix.remove.failure.invalid_rank", rankName))
@@ -367,7 +366,7 @@ object RankCommand {
                             }
 
                             // Update
-                            rank.update { this.prefix = "" }
+                            Ranks.modify(rankName) { this.prefix = "" }
 
                             // Send confirmation
                             sender.sendMessage(language(sender).getCmp("command.ranks.prefix.remove.success", rankName))
@@ -378,12 +377,12 @@ object RankCommand {
 
             literalArgument("suffix") {
                 argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                    RankDB.registeredRanks.keys.toTypedArray()
+                    Ranks.registeredRanks.keys.toTypedArray()
                 })) {
                     literalArgument("get") {
                         anyExecutor { sender, args ->
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             if (rank == null) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.suffix.get.failure.invalid_rank", rankName))
@@ -404,7 +403,7 @@ object RankCommand {
                         greedyStringArgument("suffix") {
                             anyExecutor { sender, args ->
                                 val rankName = args.get("rank").toString()
-                                val rank = RankDB.getRank(rankName)
+                                val rank = Ranks.get(rankName)
                                 val suffix = args.get("suffix").toString()
 
                                 if (rank == null) {
@@ -413,7 +412,7 @@ object RankCommand {
                                 }
 
                                 // Update
-                                rank.update { this.suffix = suffix }
+                                Ranks.modify(rankName) { this.suffix = suffix }
 
                                 // Send confirmation
                                 sender.sendMessage(language(sender).getCmp("command.ranks.suffix.set.success", rankName, suffix))
@@ -424,7 +423,7 @@ object RankCommand {
                     literalArgument("remove") {
                         anyExecutor { sender, args ->
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             if (rank == null) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.suffix.remove.failure.invalid_rank", rankName))
@@ -432,7 +431,7 @@ object RankCommand {
                             }
 
                             // Update
-                            rank.update { this.suffix = "" }
+                            Ranks.modify(rankName) { this.suffix = "" }
 
                             // Send confirmation
                             sender.sendMessage(language(sender).getCmp("command.ranks.suffix.remove.success", rankName))
@@ -444,7 +443,7 @@ object RankCommand {
             literalArgument("default") {
                 literalArgument("get") {
                     anyExecutor { sender, _ ->
-                        val rank = RankDB.defaultRank?.let { RankDB.getRank(it) }
+                        val rank = Ranks.getDefaultRank()
 
                         if (rank == null) {
                             sender.sendMessage(language(sender).getCmp("command.ranks.default.get.failure.none"))
@@ -458,11 +457,11 @@ object RankCommand {
 
                 literalArgument("set") {
                     argument(StringArgument("rank").replaceSuggestions(ArgumentSuggestions.strings {
-                        RankDB.registeredRanks.keys.toTypedArray()
+                        Ranks.registeredRanks.keys.toTypedArray()
                     })) {
                         anyExecutor { sender, args ->
                             val rankName = args.get("rank").toString()
-                            val rank = RankDB.getRank(rankName)
+                            val rank = Ranks.get(rankName)
 
                             if (rank == null) {
                                 sender.sendMessage(language(sender).getCmp("command.ranks.default.set.failure.invalid_rank"))
@@ -470,7 +469,7 @@ object RankCommand {
                             }
 
                             // Set
-                            RankDB.defaultRank = rank.name
+                            Ranks.setDefaultRank(rankName)
                             sender.sendMessage(language(sender).getCmp("command.ranks.default.set.success", rank.name))
                         }
                     }

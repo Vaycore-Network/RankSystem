@@ -4,7 +4,7 @@ import de.c4vxl.ranksystem.Main
 import de.c4vxl.ranksystem.data.Rank
 import de.c4vxl.ranksystem.event.data.RankUnregisterEvent
 import de.c4vxl.ranksystem.event.update.*
-import de.c4vxl.ranksystem.ranks.RankManager
+import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -81,7 +81,7 @@ class DisplayHandler : Listener {
     @EventHandler
     fun onPrefixUpdate(event: RankPrefixUpdateEvent) {
         event.rank.players
-            .filter { RankManager.isHighestRank(it, event.rank) }
+            .filter { it.rankPlayer.isHighestRank(event.rank) }
             .mapNotNull { it.player }
             .forEach { handle(event.rank, it) }
     }
@@ -89,7 +89,7 @@ class DisplayHandler : Listener {
     @EventHandler
     fun onSuffixUpdate(event: RankSuffixUpdateEvent) {
         event.rank.players
-            .filter { RankManager.isHighestRank(it, event.rank) }
+            .filter { it.rankPlayer.isHighestRank(event.rank) }
             .mapNotNull { it.player }
             .forEach { handle(event.rank, it) }
     }
@@ -105,7 +105,7 @@ class DisplayHandler : Listener {
      */
     private fun displayHighest(player: OfflinePlayer) {
         handle(
-            RankManager.getHighestRank(player) ?: return,
+            player.rankPlayer.highestRank ?: return,
             player.player ?: return
         )
     }
@@ -133,11 +133,11 @@ class DisplayHandler : Listener {
 
     @EventHandler
     fun onRemove(event: RankPlayerRemoveEvent) {
-        displayHighest(event.player)
+        displayHighest(event.player.bukkitPlayer)
     }
 
     @EventHandler
     fun onAdd(event: RankPlayerAddEvent) {
-        displayHighest(event.player)
+        displayHighest(event.player.bukkitPlayer)
     }
 }

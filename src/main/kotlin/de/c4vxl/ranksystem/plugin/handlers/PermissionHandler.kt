@@ -4,7 +4,7 @@ import de.c4vxl.ranksystem.Main
 import de.c4vxl.ranksystem.event.update.RankPermissionUpdateEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerAddEvent
 import de.c4vxl.ranksystem.event.update.RankPlayerRemoveEvent
-import de.c4vxl.ranksystem.ranks.RankManager
+import de.c4vxl.ranksystem.player.RankPlayer.Companion.rankPlayer
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -51,7 +51,7 @@ class PermissionHandler : Listener {
         }
 
         // Add new permissions
-        RankManager.getRanks(player).forEach { rank ->
+        player.rankPlayer.ranks.forEach { rank ->
             rank.permissions.forEach {
                 // If permission is called "_all": give player operator permissions
                 if (it == "_all") player.isOp = true
@@ -84,12 +84,12 @@ class PermissionHandler : Listener {
 
     @EventHandler
     fun onRankRemove(event: RankPlayerRemoveEvent) {
-        rebuildPermissions(event.player)
+        rebuildPermissions(event.player.bukkitPlayer)
     }
 
     @EventHandler
     fun onRankAdd(event: RankPlayerAddEvent) {
-        rebuildPermissions(event.player)
+        rebuildPermissions(event.player.bukkitPlayer)
     }
 
     @EventHandler
