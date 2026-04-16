@@ -23,7 +23,7 @@ class DisplayHandler : Listener {
         // Schedule display refreshes
         Bukkit.getScheduler().runTaskTimer(Main.instance, Runnable {
             Bukkit.getOnlinePlayers().forEach { player ->
-                player.rankPlayer.highestRank?.let { display(it, player) }
+                displayAll(player)
             }
         }, 10, 10)
     }
@@ -36,7 +36,14 @@ class DisplayHandler : Listener {
     fun display(rank: Rank, viewer: Player) {
         val scoreboard = viewer.scoreboard
         val team = "${rank.position}_rank_${rank.name}".take(16).let {
-            scoreboard.getTeam(it) ?: scoreboard.registerNewTeam(it)
+            scoreboard.getTeam(it) ?: scoreboard.registerNewTeam(it).apply {
+                // Transfer attributes from old team (if present)
+                scoreboard.getEntryTeam(viewer.name)?.let {
+                    Team.Option.entries.forEach { option ->
+                        this.setOption(option, it.getOption(option))
+                    }
+                }
+            }
         }
 
         // Remove entries to prevent clashing
@@ -60,13 +67,6 @@ class DisplayHandler : Listener {
 
                     // Rank must be the highest rank for that player
                     && player.rankPlayer.isHighestRank(rank)
-        }
-
-        // Transfer attributes from old team (if present)
-        scoreboard.getEntryTeam(viewer.name)?.let {
-            Team.Option.entries.forEach { option ->
-                team.setOption(option, it.getOption(option))
-            }
         }
 
         // Add players
