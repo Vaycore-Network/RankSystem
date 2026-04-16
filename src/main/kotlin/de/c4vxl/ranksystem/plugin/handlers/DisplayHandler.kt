@@ -10,8 +10,8 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.scoreboard.Team
 
 /**
  * Handles proper displaying of prefixes and suffixes
@@ -19,6 +19,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 class DisplayHandler : Listener {
     init {
         Bukkit.getPluginManager().registerEvents(this, Main.instance)
+
+        // Schedule display refreshes
+        Bukkit.getScheduler().runTaskTimer(Main.instance, Runnable {
+            Bukkit.getOnlinePlayers().forEach { player ->
+                player.rankPlayer.highestRank?.let { display(it, player) }
+            }
+        }, 10, 10)
     }
 
     /**
@@ -55,6 +62,13 @@ class DisplayHandler : Listener {
                     && player.rankPlayer.isHighestRank(rank)
         }
 
+        // Transfer attributes from old team (if present)
+        scoreboard.getEntryTeam(viewer.name)?.let {
+            Team.Option.entries.forEach { option ->
+                team.setOption(option, it.getOption(option))
+            }
+        }
+
         // Add players
         team.addEntries(players.map { it.name })
     }
@@ -68,13 +82,6 @@ class DisplayHandler : Listener {
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        Bukkit.getScheduler().runTaskLater(Main.instance, Runnable {
-            displayAll(event.player)
-        }, 5)
-    }
-
-    @EventHandler
-    fun onWorldChange(event: PlayerChangedWorldEvent) {
         Bukkit.getScheduler().runTaskLater(Main.instance, Runnable {
             displayAll(event.player)
         }, 5)
