@@ -88,8 +88,10 @@ object Ranks {
      * @param rank The object to store (null to remove)
      */
     fun set(name: String, rank: Rank?) {
-        if (rank == null)
+        if (rank == null) {
             cache.remove(name)
+            dbDir.resolve("$name.rank").takeIf { it.exists() }?.delete()
+        }
         else
             cache[name] = RankCache(rank, true)
     }
@@ -153,6 +155,9 @@ object Ranks {
         // Save in db
         dbDir.resolve("${name}.rank")
             .writeText(gson.toJson(cached.data))
+
+        // Mark as clean
+        cached.isDirty = false
     }
 
     /**
