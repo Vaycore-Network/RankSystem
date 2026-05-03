@@ -83,7 +83,7 @@ class Language(
          */
         val default: Language
             get() = get(
-                Main.config.getString("language.default") ?: "english"
+                Main.config.getString("language.default") ?: "en"
             )!!
 
         /**

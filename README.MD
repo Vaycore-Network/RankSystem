@@ -64,7 +64,7 @@ language:
   translations-dir: "./translations/ranks/"
 
   # The default language
-  default: "english"
+  default: "en"
 ```
 
 A project by [c4vxl](https://info.c4vxl.de/)
